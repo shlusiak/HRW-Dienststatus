@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-	android:padding="5dip" >
+	android:padding="5dp" >
 	
     
     <TextView
@@ -14,12 +14,15 @@
         android:layout_alignParentTop="true"
         android:gravity="center_vertical"
         android:text="Large Text"
+        android:paddingLeft="9dp"
         android:textAppearance="?android:attr/textAppearanceMedium" />
+    
     <TextView
         android:id="@+id/status"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
+        android:paddingRight="9dp"        
         android:layout_alignTop="@+id/name"
         android:layout_alignBottom="@+id/name"
         android:gravity="center_vertical"

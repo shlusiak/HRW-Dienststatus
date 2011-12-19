@@ -1,23 +1,23 @@
 package de.saschahlusiak.hrw.dienststatus;
 
+import java.util.ArrayList;
+
+import de.saschahlusiak.hrw.dienststatus.HRWNode.Service;
 import android.app.Activity;
-import android.content.Intent;
 import android.graphics.Color;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.Button;
+import android.widget.ListView;
 import android.widget.TextView;
 
 public class DetailActivity extends Activity {
-	private TextView path, name, status, label, duration;
-	private Button url;
+	private TextView path, name, status, label, duration, url;
 	private HRWNode node;
+	private ListView services;
 
+	@SuppressWarnings("unchecked")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.node_detail);
 
@@ -27,8 +27,9 @@ public class DetailActivity extends Activity {
 		name = (TextView) findViewById(R.id.name);
 		status = (TextView) findViewById(R.id.status);
 		label = (TextView) findViewById(R.id.label);
-		url = (Button) findViewById(R.id.url);
+		url = (TextView) findViewById(R.id.url);
 		duration = (TextView) findViewById(R.id.duration);
+		services = (ListView) findViewById(R.id.services);
 
 		node.name = getIntent().getExtras().getString("name");
 		node.url = getIntent().getExtras().getString("url");
@@ -36,6 +37,8 @@ public class DetailActivity extends Activity {
 		node.duration = getIntent().getExtras().getString("duration");
 		node.acknowledged = getIntent().getExtras().getBoolean("acknowledged");
 		node.status = getIntent().getExtras().getInt("status");
+		node.output = (ArrayList<Service>) getIntent().getExtras().getSerializable("output");
+		
 		if (node.url != null && node.title != null)
 			if (node.url.equals(node.title))
 				node.title = null;
@@ -62,15 +65,7 @@ public class DetailActivity extends Activity {
 		duration.setBackgroundColor(node.getStatusBackgroundColor());
 		duration.setTextColor(node.getStatusTextColor());
 		
-		url.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View arg0) {
-				Intent viewIntent = new Intent("android.intent.action.VIEW",
-						Uri.parse(node.url));
-				startActivity(viewIntent);
-			}
-		});
+		services.setAdapter(new DetailServiceAdapter(this, node.output));
 	}
 
 }

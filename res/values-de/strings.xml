@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Dienststatus</string>
+    <string name="main_name">HRW Dienststatus</string>
+    <string name="status_ok">OK</string>
+    <string name="status_warning">Warnung</string>
+    <string name="status_error">Gestört</string>
+    <string name="status_unknown">Unbekannt</string>
+    <string name="status_unset">Unbekannt</string>
+    <string name="status_inwork">In Arbeit</string>
+    <string name="refresh">Aktualisieren</string>
+    <string name="detail_activity">Details</string>
+    <string name="showdetails">Details zeigen</string>
+    <string name="openinbrowser">Link im Browser öffnen</string>
+    <string name="gotowebsite">Website öffnen</string>
+    <string name="preferences">Einstellungen</string>
+    <string name="about">Über...</string>
+    <string name="about_app_name">HRW Dienststatus App</string>
+    <string name="about_app_long">Zeigt den Dienststatus der Hochschule Ravensburg-Weingarten an.\n\nDie Information ist auch über Web abrufbar:\nhttp://www.hs-weingarten.de/web/rechenzentrum/dienststatus</string>
+   	<string name="cause_i_can">Weil ich\'s kann...</string>     
+    <string name="please_wait">Bitte warten</string>
+	<string name="loading_data">Lade Daten</string>
+    <string name="invalid_http_status">Ungültiger Statuscode: $1%d</string>     
+    <string name="processing_data">Verarbeite Daten</string>
+    <string name="connection_error">Verbindungsfehler</string>
+    <string name="tab_all">Alle</string>
+    <string name="tab_warnings">Warnung</string>
+    <string name="tab_statistics">Statistik</string>   
+    <string name="cancelled">Abgebrochen</string>
+</resources>

@@ -1,6 +1,8 @@
 package de.saschahlusiak.hrw.dienststatus;
 
+import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -17,8 +19,11 @@ import org.w3c.dom.NodeList;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.DialogInterface.OnCancelListener;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -41,8 +46,6 @@ public class HRWDienststatusActivity extends Activity implements
 			"http://nagvis-pub.hs-weingarten.de/cgi-bin/nagxml.pl?all");
 	private static Document dom = null;
 	private static ArrayList<HRWNode> allnodes = new ArrayList<HRWNode>();
-	private Handler handler = new Handler();
-	private ProgressDialog progress;
 
 	private void fillLevel(String level) {
 		for (HRWNode node : allnodes) {
@@ -54,9 +57,27 @@ public class HRWDienststatusActivity extends Activity implements
 					adapter.addNode(node);
 			}
 		}
+		if (level == null)
+			adapter.sortAll();
 	}
 
-	Runnable refresh = new Runnable() {
+	class RefreshTask extends AsyncTask<Void, Integer, String> {
+		private ProgressDialog progress;
+	
+		private void parseService(HRWNode node, Node property) {
+			HRWNode.Service service = new HRWNode.Service(null, null);
+			for (int i = 0; i < property.getChildNodes().getLength(); i++) {
+				Node sub = property.getChildNodes().item(i);
+
+				if (sub.getNodeName().equals("name"))
+					service.name = sub.getTextContent();
+				if (sub.getNodeName().equals("output"))
+					service.output = sub.getTextContent();
+			}
+			if (service.output != null)
+				node.output.add(service);
+		}
+
 		public void parseLevel(Node item, HRWNode HRWparent) {
 			NodeList properties = item.getChildNodes();
 			HRWNode node = new HRWNode();
@@ -81,60 +102,133 @@ public class HRWDienststatusActivity extends Activity implements
 					node.status = Integer.valueOf(property.getTextContent());
 				if (name.equals("menuindex"))
 					node.id = property.getTextContent();
+				if (name.equals("output"))
+					node.output.add(new HRWNode.Service(null, property
+							.getTextContent()));
+				if (name.equals("service"))
+					parseService(node, property);
 				if (name.equals("group")) {
 					node.hasSubItems = true;
 					parseLevel(property, node);
 				}
+				if (name.equals("hostentry")) {
+					for (int k = 0; k < property.getChildNodes().getLength(); k++) {
+						Node p = property.getChildNodes().item(k);
+						if (p.getNodeName().equals("service"))
+							parseService(node, p);
+					}
+				}
 			}
+		}
+		
+		
+		@Override
+		protected void onPreExecute() {
+			progress = new ProgressDialog(HRWDienststatusActivity.this);
+			progress.setTitle(R.string.please_wait);
+			progress.setMessage(getString(R.string.loading_data));
+			progress.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+			progress.setProgress(0);
+			progress.setOnCancelListener(new OnCancelListener() {
+				
+				@Override
+				public void onCancel(DialogInterface dialog) {
+					RefreshTask.this.cancel(true);
+				}
+			});
+			progress.show();
+			super.onPreExecute();
 		}
 
 		@Override
-		public void run() {
+		protected String doInBackground(Void... arg0) {
+			publishProgress(0, 0);
 			if (dom == null) {
 				try {
 					DefaultHttpClient client = new DefaultHttpClient();
-					HttpResponse resp = client.execute(uri);
+					final HttpResponse resp = client.execute(uri);
 
-					StatusLine status = resp.getStatusLine();
+					final StatusLine status = resp.getStatusLine();
 					if (status.getStatusCode() != 200) {
 						Log.d(tag, "HTTP error, invalid server status code: "
 								+ resp.getStatusLine());
+						
+						return getString(R.string.invalid_http_status,
+												resp.getStatusLine());
 					}
+
+					publishProgress(33, 1);
 
 					DocumentBuilderFactory factory = DocumentBuilderFactory
 							.newInstance();
 					DocumentBuilder builder = factory.newDocumentBuilder();
 					dom = builder.parse(resp.getEntity().getContent());
-				} catch (Exception e) {
+
+					publishProgress(80, 1);
+				} catch (UnknownHostException e) {
 					Log.e(tag, e.getMessage());
 					dom = null;
+					return "Unknown host: " + e.getMessage();
+				}catch (Exception e) {
+					Log.e(tag, e.getMessage());
+					dom = null;
+					return e.getMessage();
 				}
 
+				/* Should always be != null */
 				if (dom != null) {
-				Element root = dom.getDocumentElement();
-				NodeList items = root.getElementsByTagName("map");
-				allnodes.clear();
-				parseLevel(items.item(0), null);
-				} else {
+					Element root = dom.getDocumentElement();
+					NodeList items = root.getElementsByTagName("map");
 					allnodes.clear();
+
+					NodeList properties = items.item(0).getChildNodes();
+					for (int j = 0; j < properties.getLength(); j++) {
+						Node property = properties.item(j);
+						String name = property.getNodeName();
+
+						if (name.equals("group")) {
+							parseLevel(property, null);
+						}
+					}
 				}
 			}
 
-			handler.post(new Runnable() {
-
-				@Override
-				public void run() {
-					progress.dismiss();
-					if (dom != null)
-						fillLevel(level);
-					else
-						Toast.makeText(HRWDienststatusActivity.this, "Verbindungsfehler", Toast.LENGTH_LONG).show();
-					adapter.notifyDataSetChanged();
-				}
-
-			});
+			return null;
 		}
-	};
+		
+		@Override
+		protected void onCancelled() {
+			adapter.notifyDataSetChanged();
+			progress.dismiss();
+			Toast.makeText(HRWDienststatusActivity.this, getString(R.string.cancelled), Toast.LENGTH_SHORT).show();
+
+			super.onCancelled();
+		}
+
+		@Override
+		protected void onProgressUpdate(Integer... values) {
+			progress.setProgress(values[0]);
+			if (values[1] == 1)
+				progress.setMessage(getString(R.string.processing_data));
+			else
+				progress.setMessage(getString(R.string.loading_data));
+			
+			super.onProgressUpdate(values);
+		}
+
+		@Override
+		protected void onPostExecute(String result) {
+			progress.dismiss();
+			if (dom != null)
+				fillLevel(level);
+			else
+				Toast.makeText(HRWDienststatusActivity.this, result, Toast.LENGTH_SHORT).show();
+			adapter.notifyDataSetChanged();
+			super.onPostExecute(result);
+		}
+	}
+	
+	RefreshTask refreshTask = null;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -144,13 +238,6 @@ public class HRWDienststatusActivity extends Activity implements
 
 		super.onCreate(savedInstanceState);
 		this.setContentView(R.layout.main_activity);
-		
-		adapter = new DienststatusAdapter(this);
-		
-		ListView listview = (ListView) findViewById(R.id.items);
-		listview.setAdapter(adapter);
-		listview.setOnItemClickListener(this);
-		registerForContextMenu(listview);
 
 		intent = getIntent();
 
@@ -163,15 +250,29 @@ public class HRWDienststatusActivity extends Activity implements
 				setTitle(extras.getString("name"));
 			}
 		} else
-			setTitle("Dienststatus");
+			setTitle(R.string.app_name);
+
+		adapter = new DienststatusAdapter(this, level == null);
+
+		ListView listview = (ListView) findViewById(R.id.items);
+		listview.setAdapter(adapter);
+		listview.setOnItemClickListener(this);
+		registerForContextMenu(listview);
 
 		if (dom != null) {
 			fillLevel(level);
-		} else { 
-			progress = ProgressDialog.show(this, "Bitte warten", "Daten werden gelesen");
-			new Thread(refresh).start();
+		} else {
+			if (refreshTask != null) {
+				refreshTask.cancel(true);
+				try {
+					refreshTask.get();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+			refreshTask = new RefreshTask();
+			refreshTask.execute();
 		}
-
 	}
 
 	public void showDetails(HRWNode node) {
@@ -183,7 +284,10 @@ public class HRWDienststatusActivity extends Activity implements
 		intent.putExtra("status", node.status);
 		intent.putExtra("acknowledged", node.acknowledged);
 		intent.putExtra("name", node.name);
-		intent.putExtra("path", node.parent.getPath());
+		if (node.parent != null)
+			intent.putExtra("path", node.parent.getPath(true));
+		if (node.output != null)
+			intent.putExtra("output", node.output);
 		startActivity(intent);
 	}
 
@@ -200,7 +304,7 @@ public class HRWDienststatusActivity extends Activity implements
 
 		Intent viewIntent = new Intent(this, HRWDienststatusActivity.class);
 
-		newtitle = node.getPath();
+		newtitle = node.getPath(true);
 		viewIntent.putExtra("level", node.id);
 		viewIntent.putExtra("name", newtitle);
 		startActivity(viewIntent);
@@ -251,42 +355,40 @@ public class HRWDienststatusActivity extends Activity implements
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.optionsmenu, menu);
-		
+
+		// menu.findItem(R.id.preferences).setEnabled(false);
+
 		return super.onCreateOptionsMenu(menu);
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		if (item.getItemId() == R.id.refresh) {
+			if (refreshTask != null) {
+				refreshTask.cancel(true);
+				try {
+					refreshTask.get();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
 			dom = null;
 			adapter.clear();
 			adapter.notifyDataSetChanged();
-			progress = ProgressDialog.show(this, "Bitte warten", "Daten werden gelesen");
-			new Thread(refresh).start();
+			
+			refreshTask = new RefreshTask();
+			refreshTask.execute();
+			
 			return true;
 		}
-		if (item.getItemId() == R.id.preferences) {
-			Intent intent = new Intent(this, HRWPreferences.class);
+		/*
+		 * if (item.getItemId() == R.id.preferences) { Intent intent = new
+		 * Intent(this, HRWPreferences.class); startActivity(intent); }
+		 */
+		if (item.getItemId() == R.id.about) {
+			Intent intent = new Intent(this, AboutActivity.class);
 			startActivity(intent);
 		}
-/*		if (item.getItemId() == R.id.view_all) {
-			level = "all";
-
-			adapter.clear();
-			fillLevel(level);
-			adapter.notifyDataSetChanged();
-
-			return true;
-		}
-		if (item.getItemId() == R.id.view_warn) {
-			level = null;
-
-			adapter.clear();
-			fillLevel(level);
-			adapter.notifyDataSetChanged();
-
-			return true;
-		} */
 		if (item.getItemId() == R.id.gotowebsite) {
 			Intent intent = new Intent(
 					"android.intent.action.VIEW",
