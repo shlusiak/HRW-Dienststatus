@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Dienststatus</string>
+    <string name="status_ok">OK</string>
+    <string name="status_warning">Warnung</string>
+    <string name="status_error">Gestört</string>
+    <string name="status_unknown">Unbekannt</string>
+    <string name="status_unset">Unbekannt</string>
+    <string name="status_inwork">In Arbeit</string>
+    <string name="refresh">Aktualisieren</string>
+    <string name="detail_activity">Details</string>
+    <string name="showdetails">Details anzeigen</string>
+    <string name="openinbrowser">Link in Browser öffnen</string>
+    <string name="gotowebsite">Website öffnen</string>
+    <string name="preferences">Einstellungen</string>
+    <string name="preferences_view_title">Nix</string>
+        
+</resources>
