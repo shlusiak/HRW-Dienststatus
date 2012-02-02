@@ -1,20 +1,13 @@
-package de.saschahlusiak.hrw.dienststatus;
+package de.saschahlusiak.hrw.dienststatus.model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-
+import de.saschahlusiak.hrw.dienststatus.R;
 import android.graphics.Color;
 
 public class HRWNode implements Serializable {
 	static final long serialVersionUID = 1;
-	public static class Service implements Serializable {
-		static final long serialVersionUID = 2;
-		public Service(String name, String output) {
-			this.name = name;
-			this.output = output;
-		}
-		String name, output;
-	};
+
 	
 	
 	public String name, title, url, duration, path;
@@ -22,13 +15,24 @@ public class HRWNode implements Serializable {
 	public int status;
 	public String id;
 	public Boolean hasSubItems = false;
-	public ArrayList<Service> output;
+	public ArrayList<HRWService> output;
 	HRWNode parent = null;
 	
 	
-	public HRWNode() {
-		output = new ArrayList<Service>();
+	public HRWNode(HRWNode parent) {
+		output = new ArrayList<HRWService>();
 		url = null;
+		this.parent = parent;
+	}
+
+	public HRWNode() {
+		output = new ArrayList<HRWService>();
+		url = null;
+		parent = null;
+	}
+	
+	public HRWNode getParent() {
+		return parent;
 	}
 	
 	
@@ -75,10 +79,19 @@ public class HRWNode implements Serializable {
 			return Color.BLACK;
 		return Color.DKGRAY;
 	}
+	
+	public String getFullPath() {
+		String ret;
+		ret = name;
+		if (parent == null || parent.name == null)
+			return ret;
+		ret = parent.getFullPath() + " > " + name;
+		
+		return ret;
+	}
+	
 	public String getPath(boolean dots) {
 		String ret;
-		if (parent == null)
-			return name;
 		ret = name;
 		if (parent == null || parent.name == null)
 			return ret;

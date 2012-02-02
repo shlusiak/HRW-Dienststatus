@@ -1,11 +1,12 @@
-package de.saschahlusiak.hrw.dienststatus;
+package de.saschahlusiak.hrw.dienststatus.statistic;
 
 import android.app.ListActivity;
 import android.content.Intent;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -17,49 +18,82 @@ import android.widget.AdapterView.OnItemClickListener;
 import java.io.InputStream;
 import java.net.URL;
 
+
+import de.saschahlusiak.hrw.dienststatus.AboutActivity;
+import de.saschahlusiak.hrw.dienststatus.R;
+
+
 public class StatisticsActivity extends ListActivity implements OnItemClickListener {
 	private StatisticsAdapter adapter;
-	Handler handler = new Handler();
 	int category;
 	
-	private class UpdateThread extends Thread {
-		private String[] urls;
-		
-		UpdateThread(String[] urls) {
-			this.urls = urls;
-		}
-		
+	static final String WEBSITE = "http://www.hs-weingarten.de/web/rechenzentrum/zahlen-und-fakten";
+	
+	private class PictureBundle {
+		int index;
+		BitmapDrawable d;
+	};
+	
+	private class RefreshTask extends AsyncTask<String, PictureBundle, String> {
 		@Override
-		public void run() {
+		protected void onPreExecute() {
+			super.onPreExecute();
+		}
+		@Override
+		protected String doInBackground(String... urls) {
 			InputStream is;
-			Drawable d = null;
+			publishProgress();
 		
 			for (int i=0; i < urls.length; i++) {
 				try {
+					PictureBundle b = new PictureBundle();
+					b.index = i;
 					is = (InputStream) new URL("http://static.hs-weingarten.de/portvis/" + urls[i] + ".png").getContent();
-					d = Drawable.createFromStream(is, "src");
-					adapter.add(d, i);
-					d = null;
+					b.d = (BitmapDrawable)Drawable.createFromStream(is, "src");
+					if (isCancelled())
+						break;
+					publishProgress(b);
 				} catch (Exception e) {
-					handler.post(new Runnable() {
-						@Override
-						public void run() {
-							Toast.makeText(StatisticsActivity.this, getString(R.string.connection_error), Toast.LENGTH_LONG);
-						}
-					});
 					e.printStackTrace();
-					break;
+					return getString(R.string.connection_error);
 				}
-				
-				handler.post(new Runnable() {
-					@Override
-					public void run() {
-						adapter.notifyDataSetChanged();
-					}
-				});
 			}
+
+			return null;
+		}
+		
+		@Override
+		protected void onProgressUpdate(PictureBundle... values) {
+			if (values != null && values.length > 0) {
+				adapter.add(values[0].d, values[0].index);
+				adapter.setLoading(values[0].index + 1);
+			} else {
+				adapter.setLoading(0);
+			}
+
+			adapter.notifyDataSetChanged();
+			super.onProgressUpdate(values);
+		}
+		
+		@Override
+		protected void onCancelled() {
+			adapter.setLoading(-1);
+			adapter.notifyDataSetChanged();
+			super.onCancelled();
+		}
+
+		@Override
+		protected void onPostExecute(String result) {
+			if (result != null)
+				Toast.makeText(StatisticsActivity.this, result, Toast.LENGTH_SHORT).show();
+			adapter.setLoading(-1);
+			adapter.notifyDataSetChanged();
+			super.onPostExecute(result);
 		}
 	}
+	
+	RefreshTask task = null;
+
 	String titles[] = {
 			null, "Internet", "IPv6", "E-Mail", "Wireless-LAN", "LSF", "Moodle", "VPN"
 			};
@@ -78,16 +112,17 @@ public class StatisticsActivity extends ListActivity implements OnItemClickListe
 		/* 7 */ { "vpn" }
 			};
 		
+		if (task != null)
+			task.cancel(false);
+		task = new RefreshTask();
 		adapter.invalidate(urls[category].length);
-		
-		adapter.notifyDataSetChanged();
-		
-		new UpdateThread(urls[category]).start();
+		task.execute(urls[category]);
 	}
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
 		
 		adapter = new StatisticsAdapter(this);
 		getListView().setAdapter(adapter);
@@ -100,17 +135,13 @@ public class StatisticsActivity extends ListActivity implements OnItemClickListe
 				setTitle(getTitle() + " - " + titles[category]);
 			}
 		}
-		
 		refresh();
 	}
 	
-
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.optionsmenu, menu);
-		
-//		menu.findItem(R.id.preferences).setEnabled(false);
 		
 		return super.onCreateOptionsMenu(menu);
 	}
@@ -121,10 +152,6 @@ public class StatisticsActivity extends ListActivity implements OnItemClickListe
 			refresh();
 			return true;
 		}
-/*		if (item.getItemId() == R.id.preferences) {
-			Intent intent = new Intent(this, HRWPreferences.class);
-			startActivity(intent);
-		} */
 		if (item.getItemId() == R.id.about) {
 			Intent intent = new Intent(this, AboutActivity.class);
 			startActivity(intent);
@@ -132,8 +159,21 @@ public class StatisticsActivity extends ListActivity implements OnItemClickListe
 		if (item.getItemId() == R.id.gotowebsite) {
 			Intent intent = new Intent(
 					"android.intent.action.VIEW",
-					Uri.parse("http://www.hs-weingarten.de/web/rechenzentrum/zahlen-und-fakten"));
+					Uri.parse(WEBSITE));
 			startActivity(intent);
+			return true;
+		}
+		if (item.getItemId() == R.id.sendemail) {
+			try {
+				Intent intent = new Intent(Intent.ACTION_SEND);
+				intent.setType("plain/text");
+				intent.putExtra(Intent.EXTRA_EMAIL, new String[] { "rz-service@hs-weingarten.de" });
+				intent.putExtra(Intent.EXTRA_SUBJECT, "Frage an das Rechenzentrum");
+				intent.putExtra(Intent.EXTRA_TEXT, "Siehe: " + WEBSITE);
+				startActivity(intent);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 			return true;
 		}
 

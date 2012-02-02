@@ -1,8 +1,10 @@
-package de.saschahlusiak.hrw.dienststatus;
+package de.saschahlusiak.hrw.dienststatus.dienstdetails;
 
 import java.util.ArrayList;
 
-import de.saschahlusiak.hrw.dienststatus.HRWNode.Service;
+import de.saschahlusiak.hrw.dienststatus.R;
+import de.saschahlusiak.hrw.dienststatus.model.HRWNode;
+import de.saschahlusiak.hrw.dienststatus.model.HRWService;
 import android.app.Activity;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -37,7 +39,7 @@ public class DetailActivity extends Activity {
 		node.duration = getIntent().getExtras().getString("duration");
 		node.acknowledged = getIntent().getExtras().getBoolean("acknowledged");
 		node.status = getIntent().getExtras().getInt("status");
-		node.output = (ArrayList<Service>) getIntent().getExtras().getSerializable("output");
+		node.output = (ArrayList<HRWService>) getIntent().getExtras().getSerializable("output");
 		
 		if (node.url != null && node.title != null)
 			if (node.url.equals(node.title))

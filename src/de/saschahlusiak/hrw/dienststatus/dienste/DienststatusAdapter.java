@@ -1,7 +1,10 @@
-package de.saschahlusiak.hrw.dienststatus;
+package de.saschahlusiak.hrw.dienststatus.dienste;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+
+import de.saschahlusiak.hrw.dienststatus.R;
+import de.saschahlusiak.hrw.dienststatus.model.HRWNode;
 
 import android.content.Context;
 import android.graphics.Color;

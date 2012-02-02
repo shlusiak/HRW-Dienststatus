@@ -1,4 +1,4 @@
-package de.saschahlusiak.hrw.dienststatus;
+package de.saschahlusiak.hrw.dienststatus.dienste;
 
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -16,11 +16,14 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import de.saschahlusiak.hrw.dienststatus.AboutActivity;
+import de.saschahlusiak.hrw.dienststatus.R;
+import de.saschahlusiak.hrw.dienststatus.dienstdetails.DetailActivity;
+import de.saschahlusiak.hrw.dienststatus.model.HRWNode;
+import de.saschahlusiak.hrw.dienststatus.model.HRWService;
+
 import android.app.Activity;
-import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.DialogInterface.OnCancelListener;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -31,17 +34,23 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 
 public class HRWDienststatusActivity extends Activity implements
 		OnItemClickListener {
+	
+	ListView list;
+	ProgressBar progress;
 	DienststatusAdapter adapter;
+	
 	private final String tag = HRWDienststatusActivity.class.getSimpleName();
 	private String level = "all";
 	private final HttpUriRequest uri = new HttpGet(
 			"http://nagvis-pub.hs-weingarten.de/cgi-bin/nagxml.pl?all");
+	private static final String WEBSITE = "http://www.hs-weingarten.de/web/rechenzentrum/dienststatus";
 	private static Document dom = null;
 	private static ArrayList<HRWNode> allnodes = new ArrayList<HRWNode>();
 
@@ -59,11 +68,9 @@ public class HRWDienststatusActivity extends Activity implements
 			adapter.sortAll();
 	}
 
-	class RefreshTask extends AsyncTask<Void, Integer, String> {
-		private ProgressDialog progress;
-	
+	private class RefreshTask extends AsyncTask<Void, Integer, String> {
 		private void parseService(HRWNode node, Node property) {
-			HRWNode.Service service = new HRWNode.Service(null, null);
+			HRWService service = new HRWService(null, null);
 			for (int i = 0; i < property.getChildNodes().getLength(); i++) {
 				Node sub = property.getChildNodes().item(i);
 
@@ -78,8 +85,7 @@ public class HRWDienststatusActivity extends Activity implements
 
 		public void parseLevel(Node item, HRWNode HRWparent) {
 			NodeList properties = item.getChildNodes();
-			HRWNode node = new HRWNode();
-			node.parent = HRWparent;
+			HRWNode node = new HRWNode(HRWparent);
 			allnodes.add(node);
 			for (int j = 0; j < properties.getLength(); j++) {
 				Node property = properties.item(j);
@@ -101,8 +107,7 @@ public class HRWDienststatusActivity extends Activity implements
 				if (name.equals("menuindex"))
 					node.id = property.getTextContent();
 				if (name.equals("output"))
-					node.output.add(new HRWNode.Service(null, property
-							.getTextContent()));
+					node.output.add(new HRWService(null, property.getTextContent()));
 				if (name.equals("service"))
 					parseService(node, property);
 				if (name.equals("group")) {
@@ -122,19 +127,9 @@ public class HRWDienststatusActivity extends Activity implements
 		
 		@Override
 		protected void onPreExecute() {
-			progress = new ProgressDialog(HRWDienststatusActivity.this);
-			progress.setTitle(R.string.please_wait);
-			progress.setMessage(getString(R.string.loading_data));
-			progress.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+			progress.setMax(3);
 			progress.setProgress(0);
-			progress.setOnCancelListener(new OnCancelListener() {
-				
-				@Override
-				public void onCancel(DialogInterface dialog) {
-					RefreshTask.this.cancel(true);
-				}
-			});
-			progress.show();
+			progress.setVisibility(View.VISIBLE);
 			super.onPreExecute();
 		}
 
@@ -155,14 +150,14 @@ public class HRWDienststatusActivity extends Activity implements
 												resp.getStatusLine());
 					}
 
-					publishProgress(33, 1);
+					publishProgress(1, 1);
 
 					DocumentBuilderFactory factory = DocumentBuilderFactory
 							.newInstance();
 					DocumentBuilder builder = factory.newDocumentBuilder();
 					dom = builder.parse(resp.getEntity().getContent());
 
-					publishProgress(80, 1);
+					publishProgress(2, 1);
 				} catch (UnknownHostException e) {
 					Log.e(tag, e.getMessage());
 					dom = null;
@@ -197,7 +192,7 @@ public class HRWDienststatusActivity extends Activity implements
 		@Override
 		protected void onCancelled() {
 			adapter.notifyDataSetChanged();
-			progress.dismiss();
+			progress.setVisibility(View.GONE);
 			Toast.makeText(HRWDienststatusActivity.this, getString(R.string.cancelled), Toast.LENGTH_SHORT).show();
 
 			super.onCancelled();
@@ -206,17 +201,12 @@ public class HRWDienststatusActivity extends Activity implements
 		@Override
 		protected void onProgressUpdate(Integer... values) {
 			progress.setProgress(values[0]);
-			if (values[1] == 1)
-				progress.setMessage(getString(R.string.processing_data));
-			else
-				progress.setMessage(getString(R.string.loading_data));
-			
 			super.onProgressUpdate(values);
 		}
 
 		@Override
 		protected void onPostExecute(String result) {
-			progress.dismiss();
+			progress.setVisibility(View.GONE);
 			if (dom != null)
 				fillLevel(level);
 			else
@@ -235,7 +225,10 @@ public class HRWDienststatusActivity extends Activity implements
 		Bundle extras;
 
 		super.onCreate(savedInstanceState);
-		this.setContentView(R.layout.main_activity);
+		setContentView(R.layout.main_activity);
+		
+		list = (ListView) findViewById(R.id.list);
+		progress = (ProgressBar) findViewById(R.id.progress);
 
 		intent = getIntent();
 
@@ -251,11 +244,10 @@ public class HRWDienststatusActivity extends Activity implements
 			setTitle(R.string.app_name);
 
 		adapter = new DienststatusAdapter(this, level == null);
+		list.setAdapter(adapter);
 
-		ListView listview = (ListView) findViewById(R.id.items);
-		listview.setAdapter(adapter);
-		listview.setOnItemClickListener(this);
-		registerForContextMenu(listview);
+		list.setOnItemClickListener(this);
+		registerForContextMenu(list);
 
 		if (dom != null) {
 			fillLevel(level);
@@ -282,8 +274,8 @@ public class HRWDienststatusActivity extends Activity implements
 		intent.putExtra("status", node.status);
 		intent.putExtra("acknowledged", node.acknowledged);
 		intent.putExtra("name", node.name);
-		if (node.parent != null)
-			intent.putExtra("path", node.parent.getPath(true));
+		if (node.getParent() != null)
+			intent.putExtra("path", node.getParent().getPath(true));
 		if (node.output != null)
 			intent.putExtra("output", node.output);
 		startActivity(intent);
@@ -340,10 +332,26 @@ public class HRWDienststatusActivity extends Activity implements
 					.parse(node.url));
 			startActivity(intent);
 			return true;
+
 		case R.id.details:
 			showDetails(node);
 
 			return true;
+			
+		case R.id.sendemail:
+			try {
+				intent = new Intent(Intent.ACTION_SEND);
+				intent.setType("plain/text");
+				intent.putExtra(Intent.EXTRA_EMAIL, new String[] { "rz-service@hs-weingarten.de" });
+				intent.putExtra(Intent.EXTRA_SUBJECT, "Frage an das Rechenzentrum");
+				intent.putExtra(Intent.EXTRA_TEXT, "Siehe: <br>" + WEBSITE + " ,<br>" + node.getFullPath() + "<br><br>");
+				startActivity(intent);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return true;
+			
+			
 		default:
 			return super.onContextItemSelected(item);
 		}
@@ -353,9 +361,6 @@ public class HRWDienststatusActivity extends Activity implements
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.optionsmenu, menu);
-
-		// menu.findItem(R.id.preferences).setEnabled(false);
-
 		return super.onCreateOptionsMenu(menu);
 	}
 
@@ -390,12 +395,23 @@ public class HRWDienststatusActivity extends Activity implements
 		if (item.getItemId() == R.id.gotowebsite) {
 			Intent intent = new Intent(
 					"android.intent.action.VIEW",
-					Uri
-							.parse("http://www.hs-weingarten.de/web/rechenzentrum/dienststatus"));
+					Uri.parse(WEBSITE));
 			startActivity(intent);
 			return true;
 		}
-
+		if (item.getItemId() == R.id.sendemail) {
+			try {
+				Intent intent = new Intent(Intent.ACTION_SEND);
+				intent.setType("plain/text");
+				intent.putExtra(Intent.EXTRA_EMAIL, new String[] { "rz-service@hs-weingarten.de" });
+				intent.putExtra(Intent.EXTRA_SUBJECT, "Frage an das Rechenzentrum");
+				intent.putExtra(Intent.EXTRA_TEXT, "Siehe: " + WEBSITE);
+				startActivity(intent);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return true;
+		}
 		return super.onOptionsItemSelected(item);
 	}
 

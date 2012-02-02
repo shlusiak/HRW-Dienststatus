@@ -1,6 +1,9 @@
-package de.saschahlusiak.hrw.dienststatus;
+package de.saschahlusiak.hrw.dienststatus.dienstdetails;
 
 import java.util.ArrayList;
+
+import de.saschahlusiak.hrw.dienststatus.R;
+import de.saschahlusiak.hrw.dienststatus.model.HRWService;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -12,9 +15,9 @@ import android.widget.TextView;
 
 public class DetailServiceAdapter extends BaseAdapter {
 	LayoutInflater inflater;
-	ArrayList<HRWNode.Service> services;
+	ArrayList<HRWService> services;
 	
-	public DetailServiceAdapter(Context context, ArrayList<HRWNode.Service> services) {
+	public DetailServiceAdapter(Context context, ArrayList<HRWService> services) {
 		inflater = LayoutInflater.from(context);
 		this.services = services;
 	}
@@ -41,7 +44,7 @@ public class DetailServiceAdapter extends BaseAdapter {
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		ViewHolder holder;
-		HRWNode.Service service = (HRWNode.Service) getItem(position);
+		HRWService service = (HRWService) getItem(position);
 		if (convertView == null) {
 			convertView = inflater.inflate(R.layout.service_detail_item, parent,
 					false);

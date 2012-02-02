@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="de.saschahlusiak.hrw.dienststatus"
-    android:versionCode="2"
-    android:versionName="1.0" >
+    android:versionCode="3"
+    android:versionName="1.0.1" 
+    android:installLocation="auto" >
 
     <uses-sdk android:minSdkVersion="8" />
     <uses-permission android:name="android.permission.INTERNET"/>
@@ -22,22 +23,17 @@
         
         <activity
             android:label="@string/main_name"
-            android:name=".HRWDienststatusActivity" >
+            android:name=".dienste.HRWDienststatusActivity" >
         </activity>
         
         <activity
             android:label="@string/detail_activity"
-            android:name=".DetailActivity" >
-        </activity>
-        
-        <activity
-            android:label="@string/preferences"
-            android:name=".HRWPreferences" >
+            android:name=".dienstdetails.DetailActivity" >
         </activity>
         
         <activity
             android:label="@string/main_name"
-            android:name="StatisticsActivity" >
+            android:name=".statistic.StatisticsActivity" >
         </activity>
         
         <activity
@@ -45,6 +41,14 @@
             android:theme="@android:style/Theme.Dialog"
             android:name=".AboutActivity" >
         </activity>
-    </application>
+        <activity
+            android:label="@string/news"
+            android:name=".news.NewsListActivity" >
+        </activity>
+        <activity
+            android:label="@string/news"
+            android:name=".news.NewsItemActivity" >
+        </activity>
+        </application>
 
 </manifest>

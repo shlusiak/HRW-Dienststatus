@@ -1,28 +1,36 @@
-package de.saschahlusiak.hrw.dienststatus;
+package de.saschahlusiak.hrw.dienststatus.statistic;
 
 import java.util.ArrayList;
 
+import de.saschahlusiak.hrw.dienststatus.R;
+
 import android.content.Context;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 
 public class StatisticsAdapter extends BaseAdapter {
 	LayoutInflater inflater;
 	ArrayList<Statistic> items;
+	int loading;
 	
 	private class Statistic {
-		Drawable d = null;
+		BitmapDrawable d = null;
 		boolean valid = false;
 	}
-
+	private class ViewHolder {
+		ImageView image;
+		ProgressBar progress;
+	}
+	
 	public StatisticsAdapter(Context context) {
 		inflater = LayoutInflater.from(context);
 		items = new ArrayList<Statistic>();
+		loading = -1;
 	}
 
 	@Override
@@ -45,12 +53,18 @@ public class StatisticsAdapter extends BaseAdapter {
 				items.add(s);
 			}
 		}
+		
 		for (Statistic s: items) {
 			s.valid = false;
 		}
+		loading = -1;
 	}
 	
-	public void add(Drawable d, int i) {
+	public void setLoading(int i) {
+		loading = i;
+	}
+	
+	public void add(BitmapDrawable d, int i) {
 		Statistic s;
 		if (i < items.size())
 			s = items.get(i);
@@ -60,6 +74,8 @@ public class StatisticsAdapter extends BaseAdapter {
 		}
 		
 		s.d = d;
+		s.d.setTargetDensity(512);
+		s.d.setFilterBitmap(true);
 		s.valid = (d != null);
 	}
 
@@ -73,10 +89,6 @@ public class StatisticsAdapter extends BaseAdapter {
 		return position;
 	}
 
-	static class ViewHolder {
-		ImageView image;
-	}
-
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		ViewHolder holder;
@@ -87,6 +99,7 @@ public class StatisticsAdapter extends BaseAdapter {
 
 			holder = new ViewHolder();
 			holder.image = (ImageView) convertView.findViewById(R.id.image);
+			holder.progress = (ProgressBar) convertView.findViewById(R.id.progressBar);
 
 			convertView.setTag(holder);
 		} else {
@@ -97,21 +110,21 @@ public class StatisticsAdapter extends BaseAdapter {
 
 //		convertView.setMinimumHeight(500);
 		if (s.d != null) {
-			BitmapDrawable b = (BitmapDrawable)s.d;
-			b.setTargetDensity(b.getBitmap().getDensity());
+//			b.setTargetDensity(b.getBitmap().getDensity());
 			holder.image.setImageDrawable(s.d);
-			holder.image.setMaxHeight(10000);
+//			holder.image.setMaxHeight(10000);
 //			holder.image.setMinimumWidth(500);
-			holder.image.setMinimumHeight(0);
+//			holder.image.setMinimumHeight(0);
 		} else {
 			holder.image.setImageResource(R.drawable.hrw_logo);
-			holder.image.setMinimumHeight(150);
-			holder.image.setMaxHeight(150);
+//			holder.image.setMinimumHeight(150);
+//			holder.image.setMaxHeight(150);
 		}
 		if (s.valid)
 			holder.image.setAlpha(255);
 		else
-			holder.image.setAlpha(120);
+			holder.image.setAlpha(90);
+		holder.progress.setVisibility((position == loading) ? View.VISIBLE : View.GONE);
 		
 		return convertView;
 	}

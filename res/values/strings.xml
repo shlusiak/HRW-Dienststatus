@@ -13,18 +13,16 @@
     <string name="showdetails">Show details</string>
     <string name="openinbrowser">Open link in browser</string>
     <string name="gotowebsite">Open Website</string>
-    <string name="preferences">Settings</string>
     <string name="about">About...</string>
     <string name="about_app_name">HRW IT-Status App</string>
     <string name="about_app_long">Android App to visualize IT-Status information for the University of Weingarten.\n\nThe information is publically available at:\nhttp://www.hs-weingarten.de/web/rechenzentrum/dienststatus</string>
    	<string name="cause_i_can">Because I can...</string>     
-    <string name="please_wait">Please wait</string>
-	<string name="loading_data">Loading data</string>
     <string name="invalid_http_status">Invalid HTTP status code: $1%d</string>     
-    <string name="processing_data">Processing data</string>
     <string name="connection_error">Connection error</string>
     <string name="tab_all">All</string>
     <string name="tab_warnings">Warning</string>
-    <string name="tab_statistics">Statistic</string>
+    <string name="tab_statistics">Statistics</string>
     <string name="cancelled">Cancelled</string>
+    <string name="send_email">Report problem</string>
+    <string name="news">News</string>
 </resources>
