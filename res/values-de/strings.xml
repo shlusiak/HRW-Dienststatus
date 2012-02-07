@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Dienststatus</string>
-    <string name="main_name">HRW Dienststatus</string>
+    <string name="app_name">HRW Dienststatus</string>
+    <string name="main_name">Dienststatus</string>
     <string name="status_ok">OK</string>
     <string name="status_warning">Warnung</string>
     <string name="status_error">Gestört</string>

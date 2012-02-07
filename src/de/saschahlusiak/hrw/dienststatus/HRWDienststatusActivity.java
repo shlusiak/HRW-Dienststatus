@@ -2,7 +2,6 @@ package de.saschahlusiak.hrw.dienststatus;
 
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.concurrent.ExecutionException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -25,7 +24,6 @@ import android.content.DialogInterface.OnCancelListener;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
