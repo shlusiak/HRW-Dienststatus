@@ -74,8 +74,14 @@ public class StatisticsAdapter extends BaseAdapter {
 		}
 		
 		s.d = d;
-		s.d.setTargetDensity(512);
-		s.d.setFilterBitmap(true);
+		if (d != null) {
+			/* width is 463px */
+			d.getBitmap().setDensity(128);
+			/* with 128dpi the image is 3.7" = 9,18cm */ 
+			/* rendering it at 256dpi, the image will be scaled up by 2 to match 9.18cm */ 
+			s.d.setTargetDensity(256);
+			s.d.setFilterBitmap(true);
+		}
 		s.valid = (d != null);
 	}
 
