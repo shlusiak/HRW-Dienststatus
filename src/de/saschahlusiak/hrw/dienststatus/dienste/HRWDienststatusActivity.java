@@ -55,13 +55,15 @@ public class HRWDienststatusActivity extends Activity implements
 	private static ArrayList<HRWNode> allnodes = new ArrayList<HRWNode>();
 
 	private void fillLevel(String level) {
-		for (HRWNode node : allnodes) {
-			if (level != null) {
-				if (node.id.matches("^" + level + "\\.\\d*$"))
-					adapter.addNode(node);
-			} else {
-				if (node.status != 0 && !node.hasSubItems)
-					adapter.addNode(node);
+		synchronized(allnodes) {
+			for (HRWNode node : allnodes) {
+				if (level != null) {
+					if (node.id.matches("^" + level + "\\.\\d*$"))
+						adapter.addNode(node);
+				} else {
+					if (node.status != 0 && !node.hasSubItems)
+						adapter.addNode(node);
+				}
 			}
 		}
 		if (level == null)
@@ -172,15 +174,17 @@ public class HRWDienststatusActivity extends Activity implements
 				if (dom != null) {
 					Element root = dom.getDocumentElement();
 					NodeList items = root.getElementsByTagName("map");
-					allnodes.clear();
+					synchronized(allnodes) {
+						allnodes.clear();
 
-					NodeList properties = items.item(0).getChildNodes();
-					for (int j = 0; j < properties.getLength(); j++) {
-						Node property = properties.item(j);
-						String name = property.getNodeName();
+						NodeList properties = items.item(0).getChildNodes();
+						for (int j = 0; j < properties.getLength(); j++) {
+							Node property = properties.item(j);
+							String name = property.getNodeName();
 
-						if (name.equals("group")) {
-							parseLevel(property, null);
+							if (name.equals("group")) {
+								parseLevel(property, null);
+							}
 						}
 					}
 				}
