@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 
 import de.saschahlusiak.hrw.dienststatus.R;
+import de.saschahlusiak.hrw.dienststatus.model.Dienststatus;
 import de.saschahlusiak.hrw.dienststatus.model.HRWNode;
 
 import android.content.Context;
@@ -47,7 +48,7 @@ public class DienststatusAdapter extends BaseAdapter {
 		this.isflat = isflat;
 	}
 
-	public void clear() {
+	private void clear() {
 		nodes.clear();
 	}
  
@@ -58,6 +59,28 @@ public class DienststatusAdapter extends BaseAdapter {
 	public void sortAll() {
 		java.util.Collections.sort(nodes, new HRWNodeComparator());
 	}
+	
+	public void fillLevel(String level) {
+		if (Dienststatus.getAllNodes() == null)
+			return;
+		
+		synchronized(Dienststatus.getAllNodes()) {
+			clear();
+			for (HRWNode node : Dienststatus.getAllNodes()) {
+				if (level != null) {
+					if (node.id.matches("^" + level + "\\.\\d*$"))
+						addNode(node);
+				} else {
+					if (node.status != 0 && !node.hasSubItems)
+						addNode(node);
+				}
+			}
+		}
+		if (level == null)
+			sortAll();
+		notifyDataSetChanged();
+	}
+
 
 	@Override
 	public int getCount() {

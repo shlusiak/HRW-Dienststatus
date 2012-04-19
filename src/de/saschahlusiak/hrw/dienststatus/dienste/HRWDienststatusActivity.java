@@ -19,6 +19,7 @@ import org.w3c.dom.NodeList;
 import de.saschahlusiak.hrw.dienststatus.AboutActivity;
 import de.saschahlusiak.hrw.dienststatus.R;
 import de.saschahlusiak.hrw.dienststatus.dienstdetails.DetailActivity;
+import de.saschahlusiak.hrw.dienststatus.model.Dienststatus;
 import de.saschahlusiak.hrw.dienststatus.model.HRWNode;
 import de.saschahlusiak.hrw.dienststatus.model.HRWService;
 
@@ -32,6 +33,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -43,179 +45,41 @@ public class HRWDienststatusActivity extends Activity implements
 		OnItemClickListener {
 	
 	ListView list;
-	ProgressBar progress;
 	DienststatusAdapter adapter;
 	
 	private final String tag = HRWDienststatusActivity.class.getSimpleName();
 	private String level = "all";
-	private final HttpUriRequest uri = new HttpGet(
-			"http://nagvis-pub.hs-weingarten.de/cgi-bin/nagxml.pl?all");
 	private static final String WEBSITE = "http://www.hs-weingarten.de/web/rechenzentrum/dienststatus";
-	private static Document dom = null;
-	private static ArrayList<HRWNode> allnodes = new ArrayList<HRWNode>();
 
-	private void fillLevel(String level) {
-		synchronized(allnodes) {
-			for (HRWNode node : allnodes) {
-				if (level != null) {
-					if (node.id.matches("^" + level + "\\.\\d*$"))
-						adapter.addNode(node);
-				} else {
-					if (node.status != 0 && !node.hasSubItems)
-						adapter.addNode(node);
-				}
-			}
-		}
-		if (level == null)
-			adapter.sortAll();
-	}
 
-	private class RefreshTask extends AsyncTask<Void, Integer, String> {
-		private void parseService(HRWNode node, Node property) {
-			HRWService service = new HRWService(null, null);
-			for (int i = 0; i < property.getChildNodes().getLength(); i++) {
-				Node sub = property.getChildNodes().item(i);
-
-				if (sub.getNodeName().equals("name"))
-					service.name = sub.getTextContent();
-				if (sub.getNodeName().equals("output"))
-					service.output = sub.getTextContent();
-			}
-			if (service.output != null)
-				node.output.add(service);
-		}
-
-		public void parseLevel(Node item, HRWNode HRWparent) {
-			NodeList properties = item.getChildNodes();
-			HRWNode node = new HRWNode(HRWparent);
-			allnodes.add(node);
-			for (int j = 0; j < properties.getLength(); j++) {
-				Node property = properties.item(j);
-				String name = property.getNodeName();
-
-				if (name.equals("name"))
-					node.name = property.getTextContent();
-				if (name.equals("title"))
-					node.title = property.getTextContent();
-				if (name.equals("url"))
-					node.url = property.getTextContent();
-				if (name.equals("duration"))
-					node.duration = property.getTextContent();
-				if (name.equals("acknowledged"))
-					node.acknowledged = Integer.valueOf(property
-							.getTextContent()) == 1;
-				if (name.equals("status"))
-					node.status = Integer.valueOf(property.getTextContent());
-				if (name.equals("menuindex"))
-					node.id = property.getTextContent();
-				if (name.equals("output"))
-					node.output.add(new HRWService(null, property.getTextContent()));
-				if (name.equals("service"))
-					parseService(node, property);
-				if (name.equals("group")) {
-					node.hasSubItems = true;
-					parseLevel(property, node);
-				}
-				if (name.equals("hostentry")) {
-					for (int k = 0; k < property.getChildNodes().getLength(); k++) {
-						Node p = property.getChildNodes().item(k);
-						if (p.getNodeName().equals("service"))
-							parseService(node, p);
-					}
-				}
-			}
-		}
-		
-		
+	private class RefreshTask extends AsyncTask<Void, Integer, String> {		
 		@Override
 		protected void onPreExecute() {
-			progress.setMax(3);
-			progress.setProgress(0);
-			progress.setVisibility(View.VISIBLE);
+			setProgressBarIndeterminateVisibility(true);
 			super.onPreExecute();
 		}
 
 		@Override
 		protected String doInBackground(Void... arg0) {
 			publishProgress(0, 0);
-			if (dom == null) {
-				try {
-					DefaultHttpClient client = new DefaultHttpClient();
-					final HttpResponse resp = client.execute(uri);
-
-					final StatusLine status = resp.getStatusLine();
-					if (status.getStatusCode() != 200) {
-						Log.d(tag, "HTTP error, invalid server status code: "
-								+ resp.getStatusLine());
-						
-						return getString(R.string.invalid_http_status,
-												resp.getStatusLine());
-					}
-
-					publishProgress(1, 1);
-
-					DocumentBuilderFactory factory = DocumentBuilderFactory
-							.newInstance();
-					DocumentBuilder builder = factory.newDocumentBuilder();
-					dom = builder.parse(resp.getEntity().getContent());
-
-					publishProgress(2, 1);
-				} catch (UnknownHostException e) {
-					Log.e(tag, e.getMessage());
-					dom = null;
-					return "Unknown host: " + e.getMessage();
-				}catch (Exception e) {
-					Log.e(tag, e.getMessage());
-					dom = null;
-					return e.getMessage();
-				}
-
-				/* Should always be != null */
-				if (dom != null) {
-					Element root = dom.getDocumentElement();
-					NodeList items = root.getElementsByTagName("map");
-					synchronized(allnodes) {
-						allnodes.clear();
-
-						NodeList properties = items.item(0).getChildNodes();
-						for (int j = 0; j < properties.getLength(); j++) {
-							Node property = properties.item(j);
-							String name = property.getNodeName();
-
-							if (name.equals("group")) {
-								parseLevel(property, null);
-							}
-						}
-					}
-				}
-			}
-
-			return null;
+			return Dienststatus.fetch(HRWDienststatusActivity.this);
 		}
 		
 		@Override
 		protected void onCancelled() {
-			adapter.notifyDataSetChanged();
-			progress.setVisibility(View.GONE);
+			setProgressBarIndeterminateVisibility(false);
 			Toast.makeText(HRWDienststatusActivity.this, getString(R.string.cancelled), Toast.LENGTH_SHORT).show();
 
 			super.onCancelled();
 		}
 
 		@Override
-		protected void onProgressUpdate(Integer... values) {
-			progress.setProgress(values[0]);
-			super.onProgressUpdate(values);
-		}
-
-		@Override
 		protected void onPostExecute(String result) {
-			progress.setVisibility(View.GONE);
-			if (dom != null)
-				fillLevel(level);
+			setProgressBarIndeterminateVisibility(false);
+			if (result == null)
+				adapter.fillLevel(level);
 			else
 				Toast.makeText(HRWDienststatusActivity.this, result, Toast.LENGTH_SHORT).show();
-			adapter.notifyDataSetChanged();
 			super.onPostExecute(result);
 		}
 	}
@@ -229,10 +93,11 @@ public class HRWDienststatusActivity extends Activity implements
 		Bundle extras;
 
 		super.onCreate(savedInstanceState);
+		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+
 		setContentView(R.layout.main_activity);
 		
 		list = (ListView) findViewById(R.id.list);
-		progress = (ProgressBar) findViewById(R.id.progress);
 
 		intent = getIntent();
 
@@ -253,20 +118,18 @@ public class HRWDienststatusActivity extends Activity implements
 		list.setOnItemClickListener(this);
 		registerForContextMenu(list);
 
-		if (dom != null) {
-			fillLevel(level);
-		} else {
-			if (refreshTask != null) {
-				refreshTask.cancel(true);
-				try {
-					refreshTask.get();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+		adapter.fillLevel(level);
+		
+		if (refreshTask != null) {
+			refreshTask.cancel(true);
+			try {
+				refreshTask.get();
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
-			refreshTask = new RefreshTask();
-			refreshTask.execute();
 		}
+		refreshTask = new RefreshTask();
+		refreshTask.execute();
 	}
 
 	public void showDetails(HRWNode node) {
@@ -379,10 +242,7 @@ public class HRWDienststatusActivity extends Activity implements
 					e.printStackTrace();
 				}
 			}
-			dom = null;
-			adapter.clear();
-			adapter.notifyDataSetChanged();
-			
+
 			refreshTask = new RefreshTask();
 			refreshTask.execute();
 			
@@ -418,5 +278,4 @@ public class HRWDienststatusActivity extends Activity implements
 		}
 		return super.onOptionsItemSelected(item);
 	}
-
 }

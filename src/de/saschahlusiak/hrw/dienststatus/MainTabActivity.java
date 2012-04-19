@@ -6,6 +6,7 @@ import de.saschahlusiak.hrw.dienststatus.statistic.StatisticsActivity;
 import android.app.TabActivity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Window;
 import android.widget.TabHost;
 import android.widget.TabHost.TabSpec;
 
@@ -14,6 +15,8 @@ public class MainTabActivity extends TabActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+
 		// setContentView(R.layout.main_tabs);
 
 		TabHost tabHost = (TabHost) getTabHost();
