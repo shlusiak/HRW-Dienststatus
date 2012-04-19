@@ -33,8 +33,7 @@ public class DienststatusActivity extends Activity implements
 	private String level = "all";
 	private static final String WEBSITE = "http://www.hs-weingarten.de/web/rechenzentrum/dienststatus";
 
-
-	private class RefreshTask extends AsyncTask<Void, Integer, String> {		
+	private class RefreshTask extends AsyncTask<Void, Integer, String> {
 		@Override
 		protected void onPreExecute() {
 			setProgressBarIndeterminateVisibility(true);
@@ -99,19 +98,27 @@ public class DienststatusActivity extends Activity implements
 
 		list.setOnItemClickListener(this);
 		registerForContextMenu(list);
-
-		adapter.fillLevel(level);
+		setProgressBarIndeterminateVisibility(false);
 		
-		if (refreshTask != null) {
-			refreshTask.cancel(true);
-			try {
-				refreshTask.get();
-			} catch (Exception e) {
-				e.printStackTrace();
+		/* only refresh if this is a new activity and the root activity */
+		if ((savedInstanceState == null) && (level == null || level.equals("all"))) {
+			if (refreshTask != null) {
+				refreshTask.cancel(true);
+				try {
+					refreshTask.get();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
+			refreshTask = new RefreshTask();
+			refreshTask.execute();
 		}
-		refreshTask = new RefreshTask();
-		refreshTask.execute();
+	}
+	
+	@Override
+	protected void onStart() {
+		adapter.fillLevel(level);
+		super.onStart();
 	}
 
 	public void showDetails(HRWNode node) {
