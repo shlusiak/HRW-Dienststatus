@@ -15,13 +15,9 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-
 import android.content.Context;
 import android.util.Log;
-import android.view.View;
-import android.widget.Toast;
 import de.saschahlusiak.hrw.dienststatus.R;
-import de.saschahlusiak.hrw.dienststatus.dienste.HRWDienststatusActivity;
 
 public class Dienststatus {
 	private static final String tag = Dienststatus.class.getSimpleName();

@@ -13,6 +13,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 public class DetailActivity extends Activity {
+
 	private TextView path, name, status, label, duration, url;
 	private HRWNode node;
 	private ListView services;

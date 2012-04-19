@@ -1,27 +1,10 @@
 package de.saschahlusiak.hrw.dienststatus.dienste;
 
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.StatusLine;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-
 import de.saschahlusiak.hrw.dienststatus.AboutActivity;
 import de.saschahlusiak.hrw.dienststatus.R;
 import de.saschahlusiak.hrw.dienststatus.dienstdetails.DetailActivity;
 import de.saschahlusiak.hrw.dienststatus.model.Dienststatus;
 import de.saschahlusiak.hrw.dienststatus.model.HRWNode;
-import de.saschahlusiak.hrw.dienststatus.model.HRWService;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -36,18 +19,17 @@ import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 
-public class HRWDienststatusActivity extends Activity implements
+public class DienststatusActivity extends Activity implements
 		OnItemClickListener {
 	
 	ListView list;
 	DienststatusAdapter adapter;
 	
-	private final String tag = HRWDienststatusActivity.class.getSimpleName();
+	private final String tag = DienststatusActivity.class.getSimpleName();
 	private String level = "all";
 	private static final String WEBSITE = "http://www.hs-weingarten.de/web/rechenzentrum/dienststatus";
 
@@ -62,13 +44,13 @@ public class HRWDienststatusActivity extends Activity implements
 		@Override
 		protected String doInBackground(Void... arg0) {
 			publishProgress(0, 0);
-			return Dienststatus.fetch(HRWDienststatusActivity.this);
+			return Dienststatus.fetch(DienststatusActivity.this);
 		}
 		
 		@Override
 		protected void onCancelled() {
 			setProgressBarIndeterminateVisibility(false);
-			Toast.makeText(HRWDienststatusActivity.this, getString(R.string.cancelled), Toast.LENGTH_SHORT).show();
+			Toast.makeText(DienststatusActivity.this, getString(R.string.cancelled), Toast.LENGTH_SHORT).show();
 
 			super.onCancelled();
 		}
@@ -79,7 +61,7 @@ public class HRWDienststatusActivity extends Activity implements
 			if (result == null)
 				adapter.fillLevel(level);
 			else
-				Toast.makeText(HRWDienststatusActivity.this, result, Toast.LENGTH_SHORT).show();
+				Toast.makeText(DienststatusActivity.this, result, Toast.LENGTH_SHORT).show();
 			super.onPostExecute(result);
 		}
 	}
@@ -159,7 +141,7 @@ public class HRWDienststatusActivity extends Activity implements
 			return;
 		}
 
-		Intent viewIntent = new Intent(this, HRWDienststatusActivity.class);
+		Intent viewIntent = new Intent(this, DienststatusActivity.class);
 
 		newtitle = node.getPath(true);
 		viewIntent.putExtra("level", node.id);

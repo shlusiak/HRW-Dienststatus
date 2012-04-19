@@ -14,14 +14,10 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
-
 import java.io.InputStream;
 import java.net.URL;
-
-
 import de.saschahlusiak.hrw.dienststatus.AboutActivity;
 import de.saschahlusiak.hrw.dienststatus.R;
-
 
 public class StatisticsActivity extends ListActivity implements OnItemClickListener {
 	private StatisticsAdapter adapter;

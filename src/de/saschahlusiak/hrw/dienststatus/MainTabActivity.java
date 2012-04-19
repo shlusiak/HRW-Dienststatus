@@ -1,6 +1,6 @@
 package de.saschahlusiak.hrw.dienststatus;
 
-import de.saschahlusiak.hrw.dienststatus.dienste.HRWDienststatusActivity;
+import de.saschahlusiak.hrw.dienststatus.dienste.DienststatusActivity;
 import de.saschahlusiak.hrw.dienststatus.news.NewsListActivity;
 import de.saschahlusiak.hrw.dienststatus.statistic.StatisticsActivity;
 import android.app.TabActivity;
@@ -25,7 +25,7 @@ public class MainTabActivity extends TabActivity {
 
 		firstTabSpec.setIndicator(getString(R.string.tab_all), getResources()
 				.getDrawable(android.R.drawable.ic_menu_sort_by_size));
-		Intent intent = new Intent(this, HRWDienststatusActivity.class);
+		Intent intent = new Intent(this, DienststatusActivity.class);
 		intent.putExtra("level", "all");
 		firstTabSpec.setContent(intent);
 		tabHost.addTab(firstTabSpec);
@@ -33,7 +33,7 @@ public class MainTabActivity extends TabActivity {
 		firstTabSpec = tabHost.newTabSpec("tid2");
 		firstTabSpec.setIndicator(getString(R.string.tab_warnings),
 				getResources().getDrawable(android.R.drawable.ic_dialog_alert));
-		intent = new Intent(this, HRWDienststatusActivity.class);
+		intent = new Intent(this, DienststatusActivity.class);
 		intent.putExtra("level", (String) null);
 		firstTabSpec.setContent(intent);
 		tabHost.addTab(firstTabSpec);

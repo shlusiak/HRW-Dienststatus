@@ -23,7 +23,7 @@
         
         <activity
             android:label="@string/main_name"
-            android:name=".dienste.HRWDienststatusActivity" >
+            android:name=".dienste.DienststatusActivity" >
         </activity>
         
         <activity
