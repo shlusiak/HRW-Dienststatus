@@ -8,13 +8,17 @@ import android.graphics.Color;
 public class HRWNode implements Serializable {
 	static final long serialVersionUID = 1;
 
-	
+	public static final int UNSET = -1;
+	public static final int OK = 0;
+	public static final int UNKNOWN = 1;
+	public static final int WARNING = 2;
+	public static final int ERROR = 3;
 	
 	public String name, title, url, duration, path;
-	public Boolean acknowledged;
+	public boolean acknowledged;
 	public int status;
 	public String id;
-	public Boolean hasSubItems = false;
+	public boolean hasSubItems = false;
 	public ArrayList<HRWService> output;
 	HRWNode parent = null;
 	
@@ -23,6 +27,8 @@ public class HRWNode implements Serializable {
 		output = new ArrayList<HRWService>();
 		url = null;
 		this.parent = parent;
+		if (parent != null)
+			parent.hasSubItems = true;
 	}
 
 	public HRWNode() {
@@ -35,47 +41,63 @@ public class HRWNode implements Serializable {
 		return parent;
 	}
 	
+	public HRWNode setName(String name) {
+		this.name = name;
+		return this;
+	}
+	
+	public HRWNode setStatus(int status) {
+		this.status = status;
+		return this;
+	}
+	
+	public HRWNode setId(String id) {
+		this.id = id;
+		return this;
+	}
 	
 	public int getStatusText() {
 		switch(status){
-		case 0:
+		case OK:
 			return R.string.status_ok;
-		case 1:
+		case UNKNOWN:
 			return R.string.status_unknown;
-		case 2:
+		case WARNING:
 			if (acknowledged)
 				return R.string.status_inwork;
 			else
 				return R.string.status_warning;
-		case 3:
+		case ERROR:
 			return R.string.status_error;
 		
-		case -1:
+		case UNSET:
 		default:
 			return R.string.status_unset;
 		}
 	}
+	
 	public int getStatusBackgroundColor() {
-		if (status == 0)
+		if (status == OK)
 			return Color.BLACK;
-		if (status == 1)
+		if (status == UNKNOWN)
 			return Color.BLACK;
-		if (status == 2 && acknowledged)
+		if (status == WARNING && acknowledged)
 			return Color.argb(200, 0xef, 0xdf, 0x5f);
-		if (status == 2 && !acknowledged)
+		if (status == WARNING && !acknowledged)
 			return Color.rgb(0xff, 0xd7, 0x5f);
-		if (status == 3)
+		if (status == ERROR)
 			return Color.rgb(0xff, 0x57, 0x57);
 		return Color.BLACK;
 	}
+	
 	public int getStatusTextColor() {
-		if (status == 0)
+		if (status == OK)
 			return Color.WHITE;
-		if (status == 1)
+		if (status == UNKNOWN)
 			return Color.LTGRAY;
-		if (status == 2)
+		if (status == WARNING)
 			return Color.BLACK;
-		if (status == 3)
+		if (status == ERROR)
 			return Color.BLACK;
 		return Color.DKGRAY;
 	}
