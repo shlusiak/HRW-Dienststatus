@@ -147,6 +147,71 @@ public class Dienststatus {
 		}
 		return null;
 	}
+	
+	public static String fakeData() {
+		synchronized (allnodes) {
+			allnodes.clear();
+			HRWNode n;
+
+			n = new HRWNode()
+				.setName("Top 1")
+				.setId("all.1")
+				.setStatus(HRWNode.OK);
+			allnodes.add(n);
+
+			n = new HRWNode(n)
+				.setName("Top 1.1")
+				.setId("all.1.1")
+				.setStatus(HRWNode.OK);
+			allnodes.add(n);			
+
+			n = new HRWNode(n)
+				.setName("Top 1.1.1")
+				.setId("all.1.1.1")
+				.setStatus(HRWNode.OK);
+			allnodes.add(n);			
+
+			
+			n = new HRWNode()
+				.setName("Top 2")
+				.setId("all.2")
+				.setStatus(HRWNode.WARNING);
+			allnodes.add(n);
+			
+			n = new HRWNode(n)
+				.setName("Top 2.1")
+				.setId("all.2.1")
+				.setStatus(HRWNode.WARNING);
+			allnodes.add(n);
+			
+			
+			n = new HRWNode()
+				.setName("Top 3")
+				.setId("all.3")
+				.setStatus(HRWNode.ERROR);
+			allnodes.add(n);
+			
+			n = new HRWNode(n)
+				.setName("Top 3.1")
+				.setId("all.3.1")
+				.setStatus(HRWNode.ERROR);
+			allnodes.add(n);			
+			
+			
+			n = new HRWNode()
+				.setName("Top 4")
+				.setId("all.4")
+				.setStatus(HRWNode.OK);
+			allnodes.add(n);
+			
+			n = new HRWNode(n)
+				.setName("Top 4.1")
+				.setId("all.4.1")
+				.setStatus(HRWNode.OK);
+			allnodes.add(n);
+		}
+		return null;
+	}
 
 	public static boolean needsFetch() {
 		return (dom == null);
