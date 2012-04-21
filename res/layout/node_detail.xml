@@ -74,12 +74,10 @@
         android:scaleType="fitXY"
         android:src="@android:drawable/divider_horizontal_dark" />
 
-    <ListView
+    <ExpandableListView
         android:id="@+id/services"
         android:layout_width="match_parent"
-        android:layout_height="fill_parent"
-        android:choiceMode="none" >
-
-    </ListView>
+        android:layout_height="fill_parent" >
+    </ExpandableListView>
 
 </LinearLayout>

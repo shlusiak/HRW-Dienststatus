@@ -9,6 +9,7 @@ import android.app.Activity;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ExpandableListView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -16,7 +17,8 @@ public class DetailActivity extends Activity {
 
 	private TextView path, name, status, label, duration, url;
 	private HRWNode node;
-	private ListView services;
+	private ExpandableListView services;
+	DetailServiceAdapter adapter;
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -32,7 +34,7 @@ public class DetailActivity extends Activity {
 		label = (TextView) findViewById(R.id.label);
 		url = (TextView) findViewById(R.id.url);
 		duration = (TextView) findViewById(R.id.duration);
-		services = (ListView) findViewById(R.id.services);
+		services = (ExpandableListView) findViewById(R.id.services);
 
 		node.name = getIntent().getExtras().getString("name");
 		node.url = getIntent().getExtras().getString("url");
@@ -68,7 +70,15 @@ public class DetailActivity extends Activity {
 		duration.setBackgroundColor(node.getStatusBackgroundColor());
 		duration.setTextColor(node.getStatusTextColor());
 		
-		services.setAdapter(new DetailServiceAdapter(this, node.output));
-	}
+		adapter = new DetailServiceAdapter(this, node.output);
+		services.setAdapter(adapter);
+		
+		if (adapter.getStatusGroupPosition(HRWNode.ERROR) >= 0)
+			services.expandGroup(adapter.getStatusGroupPosition(HRWNode.ERROR));
+		if (adapter.getStatusGroupPosition(HRWNode.WARNING) >= 0)
+			services.expandGroup(adapter.getStatusGroupPosition(HRWNode.WARNING));
+		if (adapter.getStatusGroupPosition(HRWNode.UNKNOWN) >= 0)
+			services.expandGroup(adapter.getStatusGroupPosition(HRWNode.UNKNOWN));
+		}
 
 }
