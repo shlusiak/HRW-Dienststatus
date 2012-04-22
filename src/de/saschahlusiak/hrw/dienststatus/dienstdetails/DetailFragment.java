@@ -30,6 +30,10 @@ public class DetailFragment extends Fragment {
 	String nodeId;
 	DetailServiceAdapter adapter;
 	
+	public DetailFragment() {
+		
+	}
+	
 	public DetailFragment(String nodeId) {
 		this.nodeId = nodeId;
 		this.node = Dienststatus.findNode(nodeId);
@@ -38,7 +42,17 @@ public class DetailFragment extends Fragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		if (savedInstanceState != null) {
+			this.nodeId = savedInstanceState.getString("nodeid");
+			this.node = Dienststatus.findNode(nodeId);
+		}
 		setHasOptionsMenu(true);
+	}
+	
+	@Override
+	public void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		outState.putString("nodeid", nodeId);
 	}
 	
 	@Override

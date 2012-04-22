@@ -41,13 +41,12 @@ public class DienststatusFragment extends ListFragment implements OnItemClickLis
 		
 	}
 
-	public DienststatusFragment(String level, OnNodeClicked listener) {
+	public DienststatusFragment(String level) {
 		this.level = level;
-		this.mListener = listener;
 	}
 	
-	public DienststatusFragment(HRWNode node, OnNodeClicked listener) {
-		this(node == null ? "all" : node.id, listener);
+	public DienststatusFragment(HRWNode node) {
+		this(node == null ? "all" : node.id);
 		this.node = node;
 	}
 
@@ -58,11 +57,24 @@ public class DienststatusFragment extends ListFragment implements OnItemClickLis
 		adapter =  new DienststatusAdapter(getActivity(), level == null);
 		setListAdapter(adapter);
 		setHasOptionsMenu(true);
+		
+		if (savedInstanceState != null) {
+			this.level = savedInstanceState.getString("level");
+			this.node = (HRWNode) savedInstanceState.getSerializable("node");
+		}
+	}
+	
+	@Override
+	public void onSaveInstanceState(Bundle outState) {		
+		super.onSaveInstanceState(outState);
+		outState.putString("level", level);
+		outState.putSerializable("node", node);
 	}
 	
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
+		this.mListener = (OnNodeClicked) getActivity();
 
 		getListView().setOnItemClickListener(this);
 		registerForContextMenu(getListView());

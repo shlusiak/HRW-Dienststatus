@@ -5,6 +5,7 @@ import de.saschahlusiak.hrw.dienststatus.dienste.DienststatusFragment;
 import de.saschahlusiak.hrw.dienststatus.dienste.DienststatusFragment.OnNodeClicked;
 import de.saschahlusiak.hrw.dienststatus.model.HRWNode;
 import de.saschahlusiak.hrw.dienststatus.statistic.StatisticsFragment;
+import de.saschahlusiak.hrw.dienststatus.statistic.StatisticsFragment.OnStatisticClicked;
 import android.app.ActionBar;
 import android.app.ActionBar.TabListener;
 import android.app.Fragment;
@@ -20,15 +21,25 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.Window;
 
-public class MainActivity extends Activity implements OnNodeClicked{
+public class MainActivity extends Activity implements OnNodeClicked, OnStatisticClicked{
 	static final String tag = MainActivity.class.getSimpleName();
 
 	class DienststatusTabListener implements TabListener {
 		Fragment f;
 		boolean flat;
+		String tag;
 		
 		DienststatusTabListener(boolean flat) {
 			this.flat = flat;
+			this.tag = flat ? "warning" : "all";
+			
+			f = getFragmentManager().findFragmentByTag(tag);
+            if (f != null && !f.isDetached()) {
+                FragmentTransaction ft = getFragmentManager().beginTransaction();
+                ft.detach(f);
+                ft.commit();
+                f = null;
+            }
 		}
 
 		@Override
@@ -38,8 +49,8 @@ public class MainActivity extends Activity implements OnNodeClicked{
 		@Override
 		public void onTabSelected(Tab tab, FragmentTransaction ft) {
 			if (f == null) {
-				f = new DienststatusFragment(flat ? null : "all", MainActivity.this);
-				ft.add(android.R.id.content, f, flat ? "warning" : "all");
+				f = new DienststatusFragment(flat ? null : "all");
+				ft.replace(android.R.id.content, f, tag);
 			} else {
 				ft.attach(f);
 			}
@@ -55,6 +66,8 @@ public class MainActivity extends Activity implements OnNodeClicked{
 				fm.popBackStack(fm.getBackStackEntryAt(0).getName(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
 			getActionBar().setDisplayHomeAsUpEnabled(false);
 			getActionBar().setHomeButtonEnabled(false);
+			
+			f = null;
 		}
 	}
 	
@@ -69,7 +82,7 @@ public class MainActivity extends Activity implements OnNodeClicked{
 		public void onTabSelected(Tab tab, FragmentTransaction ft) {
 			if (f == null) {
 				f = new StatisticsFragment(0);
-				ft.add(android.R.id.content, f, "statistics");
+				ft.replace(android.R.id.content, f, "statistics");
 			} else {
 				ft.attach(f);
 			}
@@ -85,6 +98,8 @@ public class MainActivity extends Activity implements OnNodeClicked{
 				fm.popBackStack(fm.getBackStackEntryAt(0).getName(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
 			getActionBar().setDisplayHomeAsUpEnabled(false);
 			getActionBar().setHomeButtonEnabled(false);
+			
+			f = null;
 		}
 	}	
 
@@ -111,12 +126,22 @@ public class MainActivity extends Activity implements OnNodeClicked{
 
 		getActionBar().setHomeButtonEnabled(false);
 		getActionBar().setDisplayHomeAsUpEnabled(false);
+		
+		if (savedInstanceState != null) {
+			getActionBar().setSelectedNavigationItem(savedInstanceState.getInt("tab", 0));
+		}
 	}
 	
 	@Override
 	protected void onStart() {
 		setProgressBarIndeterminateVisibility(false);
 		super.onStart();
+	}
+	
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		outState.putInt("tab", getActionBar().getSelectedNavigationIndex());
 	}
 	
 	@Override
@@ -166,9 +191,24 @@ public class MainActivity extends Activity implements OnNodeClicked{
                 R.animator.fragment_slide_left_exit /*,
                 R.animator.fragment_slide_right_enter,
                 R.animator.fragment_slide_right_exit */);
-		fragmentTransaction.replace(android.R.id.content, new DienststatusFragment(node, this), node.id);
+		fragmentTransaction.replace(android.R.id.content, new DienststatusFragment(node), node.id);
 		Log.v(tag, "pushing new " + node.getParentId());
 		fragmentTransaction.addToBackStack(node.getParentId());
+		fragmentTransaction.commit();
+	}
+
+	@Override
+	public void onStatisticClicked(int category) {
+		FragmentManager fragmentManager = getFragmentManager();
+		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+		fragmentTransaction.setCustomAnimations(
+				R.animator.fragment_slide_left_enter,
+                R.animator.fragment_slide_left_exit /*,
+                R.animator.fragment_slide_right_enter,
+                R.animator.fragment_slide_right_exit */);
+		fragmentTransaction.replace(android.R.id.content, new StatisticsFragment(category));
+//		Log.v(tag, "pushing new " + node.getParentId());
+		fragmentTransaction.addToBackStack(null);
 		fragmentTransaction.commit();
 	}
 }
