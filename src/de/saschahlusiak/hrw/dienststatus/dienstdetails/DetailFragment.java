@@ -1,6 +1,5 @@
 package de.saschahlusiak.hrw.dienststatus.dienstdetails;
 
-import de.saschahlusiak.hrw.dienststatus.NodeFragmentInterface;
 import de.saschahlusiak.hrw.dienststatus.R;
 import de.saschahlusiak.hrw.dienststatus.model.Dienststatus;
 import de.saschahlusiak.hrw.dienststatus.model.HRWNode;
@@ -21,7 +20,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class DetailFragment extends Fragment implements NodeFragmentInterface{
+public class DetailFragment extends Fragment {
 	private TextView path, name, status, label, duration, url;
 	private HRWNode node;
 	private ExpandableListView services;
@@ -165,13 +164,6 @@ public class DetailFragment extends Fragment implements NodeFragmentInterface{
 			services.expandGroup(adapter.getStatusGroupPosition(HRWNode.WARNING));
 		if (adapter.getStatusGroupPosition(HRWNode.UNKNOWN) >= 0)
 			services.expandGroup(adapter.getStatusGroupPosition(HRWNode.UNKNOWN));
-	}
-
-
-
-	@Override
-	public HRWNode getNode() {
-		return node;
 	}
 
 	private class RefreshTask extends AsyncTask<Void, Integer, String> {

@@ -4,6 +4,7 @@ import de.saschahlusiak.hrw.dienststatus.dienstdetails.DetailFragment;
 import de.saschahlusiak.hrw.dienststatus.dienste.DienststatusFragment;
 import de.saschahlusiak.hrw.dienststatus.dienste.DienststatusFragment.OnNodeClicked;
 import de.saschahlusiak.hrw.dienststatus.model.HRWNode;
+import de.saschahlusiak.hrw.dienststatus.statistic.StatisticsFragment;
 import android.app.ActionBar;
 import android.app.ActionBar.TabListener;
 import android.app.Fragment;
@@ -56,6 +57,36 @@ public class MainActivity extends Activity implements OnNodeClicked{
 			getActionBar().setHomeButtonEnabled(false);
 		}
 	}
+	
+	class StatisticsTabListener implements TabListener {
+		Fragment f;
+		
+		@Override
+		public void onTabReselected(Tab tab, FragmentTransaction ft) {
+		}
+
+		@Override
+		public void onTabSelected(Tab tab, FragmentTransaction ft) {
+			if (f == null) {
+				f = new StatisticsFragment(0);
+				ft.add(android.R.id.content, f, "statistics");
+			} else {
+				ft.attach(f);
+			}
+		}
+
+		@Override
+		public void onTabUnselected(Tab tab, FragmentTransaction ft) {
+			if (f != null)
+				ft.detach(f);
+
+			FragmentManager fm = getFragmentManager();
+			if (fm.getBackStackEntryCount() > 0)
+				fm.popBackStack(fm.getBackStackEntryAt(0).getName(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
+			getActionBar().setDisplayHomeAsUpEnabled(false);
+			getActionBar().setHomeButtonEnabled(false);
+		}
+	}	
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -66,14 +97,14 @@ public class MainActivity extends Activity implements OnNodeClicked{
 //		getActionBar().setSubtitle("huhu");
 		
 		getActionBar().addTab(getActionBar().newTab()
-				.setText("Alle")
+				.setText(R.string.tab_all)
 				.setTabListener(new DienststatusTabListener(false)));
 		getActionBar().addTab(getActionBar().newTab()
-				.setText("Warnung")
+				.setText(R.string.tab_warnings)
 				.setTabListener(new DienststatusTabListener(true)));
-//		getActionBar().addTab(getActionBar().newTab()
-//				.setText("Statistik")
-//				.setTabListener(new MyTabListener()));
+		getActionBar().addTab(getActionBar().newTab()
+				.setText(R.string.tab_statistics)
+				.setTabListener(new StatisticsTabListener()));
 //		getActionBar().addTab(getActionBar().newTab()
 //				.setText("News")
 //				.setTabListener(new MyTabListener()));
@@ -99,23 +130,8 @@ public class MainActivity extends Activity implements OnNodeClicked{
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case android.R.id.home:
-			NodeFragmentInterface f;
-			f = (NodeFragmentInterface)getFragmentManager().findFragmentById(android.R.id.content);
-			FragmentManager fragmentManager = getFragmentManager();
-			HRWNode node = f.getNode();
-			
-/*			if (fragmentManager.findFragmentByTag(node.getParentId()) != null) {
-				Log.v(tag, "popping back to existing " + node.getParentId());
-				fragmentManager.popBackStack(node.getParentId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
-			} else {
-				FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-				fragmentTransaction.replace(android.R.id.content, new DienststatusFragment(node.getParent(), this), node.getParentId());
-				Log.v(tag, "pushing new " + node.getParentId());
-				fragmentTransaction.addToBackStack(node.getParentId());
-				fragmentTransaction.commit();
-			} */
+			FragmentManager fragmentManager = getFragmentManager();			
 			fragmentManager.popBackStack();
-
 			break;
 		case R.id.about:
 			Intent intent = new Intent(this, AboutActivity.class);

@@ -1,6 +1,5 @@
 package de.saschahlusiak.hrw.dienststatus.dienste;
 
-import de.saschahlusiak.hrw.dienststatus.NodeFragmentInterface;
 import de.saschahlusiak.hrw.dienststatus.R;
 import de.saschahlusiak.hrw.dienststatus.model.Dienststatus;
 import de.saschahlusiak.hrw.dienststatus.model.HRWNode;
@@ -22,7 +21,7 @@ import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Toast;
 
-public class DienststatusFragment extends ListFragment implements OnItemClickListener, NodeFragmentInterface {
+public class DienststatusFragment extends ListFragment implements OnItemClickListener {
 	static final String tag = DienststatusFragment.class.getSimpleName();
 	DienststatusAdapter adapter;
 	static RefreshTask refreshTask;
@@ -109,10 +108,6 @@ public class DienststatusFragment extends ListFragment implements OnItemClickLis
 	@Override
 	public void onStop() {
 		super.onStop();
-	}
-	
-	public HRWNode getNode() {
-		return node;
 	}
 	
 	@Override
