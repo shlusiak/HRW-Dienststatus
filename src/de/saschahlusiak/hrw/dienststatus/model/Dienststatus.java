@@ -148,4 +148,7 @@ public class Dienststatus {
 		return null;
 	}
 
+	public static boolean needsFetch() {
+		return (dom == null);
+	}
 }
