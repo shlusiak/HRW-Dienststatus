@@ -56,7 +56,7 @@ public class HRWNode implements Serializable {
 		return this;
 	}
 	
-	public int getStatusText() {
+	public static int getStatusText(int status, boolean acknowledged) {
 		switch(status){
 		case OK:
 			return R.string.status_ok;
@@ -76,7 +76,12 @@ public class HRWNode implements Serializable {
 		}
 	}
 	
-	public int getStatusBackgroundColor() {
+	public int getStatusText() {
+		return getStatusText(status, acknowledged);
+	}
+	
+	
+	public static int getStatusBackgroundColor(int status, boolean acknowledged) {
 		if (status == OK)
 			return Color.BLACK;
 		if (status == UNKNOWN)
@@ -90,7 +95,11 @@ public class HRWNode implements Serializable {
 		return Color.BLACK;
 	}
 	
-	public int getStatusTextColor() {
+	public int getStatusBackgroundColor() {
+		return getStatusBackgroundColor(status, acknowledged);
+	}
+	
+	public static int getStatusTextColor(int status) {
 		if (status == OK)
 			return Color.WHITE;
 		if (status == UNKNOWN)
@@ -101,6 +110,11 @@ public class HRWNode implements Serializable {
 			return Color.BLACK;
 		return Color.DKGRAY;
 	}
+	
+	public int getStatusTextColor() {
+		return getStatusTextColor(status);
+	}
+	
 	
 	public String getFullPath() {
 		String ret;
