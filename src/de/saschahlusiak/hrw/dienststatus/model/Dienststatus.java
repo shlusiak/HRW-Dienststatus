@@ -48,6 +48,14 @@ public class Dienststatus {
 		if (service.output != null)
 			node.output.add(service);
 	}
+	
+	public static HRWNode findNode(String id) {
+		for (HRWNode node: allnodes) {
+			if (node.id.equals(id))
+				return node;
+		}
+		return null;
+	}
 
 	private static void parseLevel(Node item, HRWNode HRWparent) {
 		NodeList properties = item.getChildNodes();
@@ -88,8 +96,8 @@ public class Dienststatus {
 			}
 		}
 	}
-
-	public static String fetch(Context context) {
+	
+	public synchronized static String fetch(Context context) {
 		try {
 			DefaultHttpClient client = new DefaultHttpClient();
 			final HttpResponse resp = client.execute(uri);
@@ -108,15 +116,15 @@ public class Dienststatus {
 					.newInstance();
 			DocumentBuilder builder = factory.newDocumentBuilder();
 			dom = builder.parse(resp.getEntity().getContent());
-
 		} catch (UnknownHostException e) {
 			Log.e(tag, e.getMessage());
-			dom = null;
 			return "Unknown host: " + e.getMessage();
 		} catch (Exception e) {
 			Log.e(tag, e.getMessage());
-			dom = null;
 			return e.getMessage();
+		}
+		if (Thread.interrupted()) {
+			return null;
 		}
 
 		/* Should always be != null */
