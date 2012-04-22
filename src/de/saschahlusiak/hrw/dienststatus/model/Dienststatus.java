@@ -32,7 +32,7 @@ public class Dienststatus {
 	}
 
 	private static void parseService(HRWNode node, Node property) {
-		HRWService service = new HRWService(null, null);
+		HRWService service = new HRWService(null, null, HRWNode.UNSET);
 		for (int i = 0; i < property.getChildNodes().getLength(); i++) {
 			Node sub = property.getChildNodes().item(i);
 
@@ -40,6 +40,10 @@ public class Dienststatus {
 				service.name = sub.getTextContent();
 			if (sub.getNodeName().equals("output"))
 				service.output = sub.getTextContent();
+			if (sub.getNodeName().equals("status"))
+				service.status = Integer.valueOf(sub.getTextContent());
+			if (sub.getNodeName().equals("acknowledged"))
+				service.acknowledged = Integer.valueOf(sub.getTextContent()) == 1;
 		}
 		if (service.output != null)
 			node.output.add(service);
@@ -68,8 +72,7 @@ public class Dienststatus {
 			if (name.equals("menuindex"))
 				node.id = property.getTextContent();
 			if (name.equals("output"))
-				node.output
-						.add(new HRWService(null, property.getTextContent()));
+				node.output.add(new HRWService(null, property.getTextContent(), HRWNode.UNSET));
 			if (name.equals("service"))
 				parseService(node, property);
 			if (name.equals("group")) {
