@@ -41,6 +41,14 @@ public class HRWNode implements Serializable {
 		return parent;
 	}
 	
+	public String getParentId() {
+		return parent == null ? "all" : parent.id;
+	}
+	
+	public String getId() {
+		return id;
+	}
+	
 	public HRWNode setName(String name) {
 		this.name = name;
 		return this;
