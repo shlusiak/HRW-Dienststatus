@@ -28,18 +28,18 @@ public class MainActivity extends Activity implements OnNodeClicked, OnStatistic
 		Fragment f;
 		boolean flat;
 		String tag;
-		
+
 		DienststatusTabListener(boolean flat) {
 			this.flat = flat;
 			this.tag = flat ? "warning" : "all";
-			
-			f = getFragmentManager().findFragmentByTag(tag);
-            if (f != null && !f.isDetached()) {
+
+			f = getFragmentManager().findFragmentById(android.R.id.content);
+            if (f != null && !f.isDetached() && f.getTag().equals(tag)) {
                 FragmentTransaction ft = getFragmentManager().beginTransaction();
                 ft.detach(f);
                 ft.commit();
-                f = null;
-            }
+            } else
+            	f = null;
 		}
 
 		@Override
@@ -52,15 +52,14 @@ public class MainActivity extends Activity implements OnNodeClicked, OnStatistic
 				f = new DienststatusFragment(flat ? null : "all");
 				ft.replace(android.R.id.content, f, tag);
 			} else {
+//				ft.replace(android.R.id.content, f, tag);
+				
 				ft.attach(f);
 			}
 		}
 
 		@Override
 		public void onTabUnselected(Tab tab, FragmentTransaction ft) {
-			if (f != null)
-				ft.detach(f);
-
 			FragmentManager fm = getFragmentManager();
 			if (fm.getBackStackEntryCount() > 0)
 				fm.popBackStack(fm.getBackStackEntryAt(0).getName(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
@@ -169,7 +168,7 @@ public class MainActivity extends Activity implements OnNodeClicked, OnStatistic
 	}
 
 	@Override
-	public void onNodeDetails(HRWNode node) {
+	public void onNodeDetails(DienststatusFragment fragment, HRWNode node) {
 		FragmentManager fragmentManager = getFragmentManager();
 		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 		fragmentTransaction.setCustomAnimations(
@@ -177,13 +176,13 @@ public class MainActivity extends Activity implements OnNodeClicked, OnStatistic
                 R.animator.fragment_slide_left_exit /*,
                 R.animator.fragment_slide_right_enter,
                 R.animator.fragment_slide_right_exit */);
-		fragmentTransaction.replace(android.R.id.content, new DetailFragment(node.id), node.id);
+		fragmentTransaction.replace(android.R.id.content, new DetailFragment(node.id), fragment.getTag());
 		fragmentTransaction.addToBackStack(node.getParentId());
 		fragmentTransaction.commit();		
 	}
 
 	@Override
-	public void onNodeClicked(HRWNode node) {
+	public void onNodeClicked(DienststatusFragment fragment, HRWNode node) {
 		FragmentManager fragmentManager = getFragmentManager();
 		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 		fragmentTransaction.setCustomAnimations(
@@ -191,7 +190,7 @@ public class MainActivity extends Activity implements OnNodeClicked, OnStatistic
                 R.animator.fragment_slide_left_exit /*,
                 R.animator.fragment_slide_right_enter,
                 R.animator.fragment_slide_right_exit */);
-		fragmentTransaction.replace(android.R.id.content, new DienststatusFragment(node), node.id);
+		fragmentTransaction.replace(android.R.id.content, new DienststatusFragment(node), fragment.getTag());
 		Log.v(tag, "pushing new " + node.getParentId());
 		fragmentTransaction.addToBackStack(node.getParentId());
 		fragmentTransaction.commit();

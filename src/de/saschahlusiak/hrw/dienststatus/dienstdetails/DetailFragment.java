@@ -217,7 +217,8 @@ public class DetailFragment extends Fragment {
 				node = Dienststatus.findNode(nodeId);
 				updateView();
 			} else {
-				Toast.makeText(getActivity(), result, Toast.LENGTH_SHORT).show();
+				if (getActivity() != null)
+					Toast.makeText(getActivity(), result, Toast.LENGTH_SHORT).show();
 			}
 			super.onPostExecute(result);
 		}

@@ -33,8 +33,8 @@ public class DienststatusFragment extends ListFragment implements OnItemClickLis
 	View mRefreshIndeterminateProgressView;
 	
 	public interface OnNodeClicked {
-		public void onNodeDetails(HRWNode node);
-		public void onNodeClicked(HRWNode node);
+		public void onNodeDetails(DienststatusFragment fragment, HRWNode node);
+		public void onNodeClicked(DienststatusFragment fragment, HRWNode node);
 	}
 
 	public DienststatusFragment() {
@@ -156,7 +156,7 @@ public class DienststatusFragment extends ListFragment implements OnItemClickLis
 			return true;
 
 		case R.id.details:
-			mListener.onNodeDetails(node);
+			mListener.onNodeDetails(this, node);
 			return true;
 			
 		case R.id.sendemail:
@@ -203,9 +203,9 @@ public class DienststatusFragment extends ListFragment implements OnItemClickLis
 
 		node = (HRWNode) adapter.getItem(position);
 		if (node.hasSubItems == false)
-			mListener.onNodeDetails(node);
+			mListener.onNodeDetails(this, node);
 		else
-			mListener.onNodeClicked(node);
+			mListener.onNodeClicked(this, node);
 	}
 	
 	void setProgressActionView(boolean refreshing) {
