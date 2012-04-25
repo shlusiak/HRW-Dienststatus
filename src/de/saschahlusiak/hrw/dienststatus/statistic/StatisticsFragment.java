@@ -28,7 +28,7 @@ public class StatisticsFragment extends ListFragment implements OnItemClickListe
 	static final String WEBSITE = "http://www.hs-weingarten.de/web/rechenzentrum/zahlen-und-fakten";
 	
 	public interface OnStatisticClicked {
-		public void onStatisticClicked(int category);
+		public void onStatisticClicked(StatisticsFragment fragment, int category);
 	}
 	
 	OnStatisticClicked mListener;
@@ -195,7 +195,7 @@ public class StatisticsFragment extends ListFragment implements OnItemClickListe
 		if (category != 0)
 			return;
 		
-		mListener.onStatisticClicked((int)id + 1);
+		mListener.onStatisticClicked(this, (int)id + 1);
 	}
 
 }

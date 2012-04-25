@@ -23,7 +23,8 @@ import android.view.Window;
 
 public class MainActivity extends Activity implements OnNodeClicked, OnStatisticClicked{
 	static final String tag = MainActivity.class.getSimpleName();
-
+	boolean isCreated = false;
+	
 	class DienststatusTabListener implements TabListener {
 		Fragment f;
 		boolean flat;
@@ -48,6 +49,9 @@ public class MainActivity extends Activity implements OnNodeClicked, OnStatistic
 
 		@Override
 		public void onTabSelected(Tab tab, FragmentTransaction ft) {
+			if (!isCreated && f == null)
+					return;
+			
 			if (f == null) {
 				f = new DienststatusFragment(flat ? null : "all");
 				ft.replace(android.R.id.content, f, tag);
@@ -60,6 +64,8 @@ public class MainActivity extends Activity implements OnNodeClicked, OnStatistic
 
 		@Override
 		public void onTabUnselected(Tab tab, FragmentTransaction ft) {
+			if (f == null)
+				return;
 			FragmentManager fm = getFragmentManager();
 			if (fm.getBackStackEntryCount() > 0)
 				fm.popBackStack(fm.getBackStackEntryAt(0).getName(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
@@ -89,6 +95,8 @@ public class MainActivity extends Activity implements OnNodeClicked, OnStatistic
 
 		@Override
 		public void onTabSelected(Tab tab, FragmentTransaction ft) {
+			if (!isCreated && f == null)
+				return;
 			if (f == null) {
 				f = new StatisticsFragment(0);
 				ft.replace(android.R.id.content, f, "statistics");
@@ -120,6 +128,9 @@ public class MainActivity extends Activity implements OnNodeClicked, OnStatistic
 		getActionBar().setDisplayShowTitleEnabled(true);
 //		getActionBar().setSubtitle("huhu");
 		
+		if (savedInstanceState == null)
+			isCreated = true;
+		
 		getActionBar().addTab(getActionBar().newTab()
 				.setText(R.string.tab_all)
 				.setTabListener(new DienststatusTabListener(false)));
@@ -135,6 +146,7 @@ public class MainActivity extends Activity implements OnNodeClicked, OnStatistic
 
 		getActionBar().setHomeButtonEnabled(false);
 		getActionBar().setDisplayHomeAsUpEnabled(false);
+		isCreated = true;
 		
 		if (savedInstanceState != null) {
 			getActionBar().setSelectedNavigationItem(savedInstanceState.getInt("tab", 0));
@@ -207,7 +219,7 @@ public class MainActivity extends Activity implements OnNodeClicked, OnStatistic
 	}
 
 	@Override
-	public void onStatisticClicked(int category) {
+	public void onStatisticClicked(StatisticsFragment fragment, int category) {
 		FragmentManager fragmentManager = getFragmentManager();
 		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 		fragmentTransaction.setCustomAnimations(
@@ -215,7 +227,7 @@ public class MainActivity extends Activity implements OnNodeClicked, OnStatistic
                 R.animator.fragment_slide_left_exit /*,
                 R.animator.fragment_slide_right_enter,
                 R.animator.fragment_slide_right_exit */);
-		fragmentTransaction.replace(android.R.id.content, new StatisticsFragment(category));
+		fragmentTransaction.replace(android.R.id.content, new StatisticsFragment(category), fragment.getTag());
 //		Log.v(tag, "pushing new " + node.getParentId());
 		fragmentTransaction.addToBackStack(null);
 		fragmentTransaction.commit();
