@@ -73,6 +73,16 @@ public class MainActivity extends Activity implements OnNodeClicked, OnStatistic
 	class StatisticsTabListener implements TabListener {
 		Fragment f;
 		
+		public StatisticsTabListener() {
+			f = getFragmentManager().findFragmentById(android.R.id.content);
+            if (f != null && !f.isDetached() && f.getTag().equals("statistics")) {
+                FragmentTransaction ft = getFragmentManager().beginTransaction();
+                ft.detach(f);
+                ft.commit();
+            } else
+            	f = null;			
+		}
+		
 		@Override
 		public void onTabReselected(Tab tab, FragmentTransaction ft) {
 		}
