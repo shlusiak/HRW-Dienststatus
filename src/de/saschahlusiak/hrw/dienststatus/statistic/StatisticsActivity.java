@@ -100,7 +100,7 @@ public class StatisticsActivity extends ListActivity implements OnItemClickListe
 	
 	private void refresh() {
 		String urls[][] = { 
-		/* 0 */	{ "internet", "internet-ipv6", "email", "wlan-hswgt2", "lsf", "moodle-week", "vpn" },
+		/* 0 */	{ "internet", "internet-ipv6", "email", "wlan-hswgt2", "lsf", "moodle-week", "vpn", "nagvis-day" },
 		/* 1 */ { "internet", "internet-month", "internet-year" },
 		/* 2 */ { "internet-ipv6", "internet-ipv6-month", "internet-ipv6-year", "internet-ipv6-percent", "internet-ipv6-percent-year" },
 		/* 3 */ { "email", "email-week", "email-month", "email-year" },
@@ -109,7 +109,8 @@ public class StatisticsActivity extends ListActivity implements OnItemClickListe
 				  "wlan-eduroam", "wlan-eduroam-week", "wlan-eduroam-month", "wlan-eduroam-year" },
 		/* 5 */ { "lsf", "lsf-week", "lsf-month", "lsf-year" },
 		/* 6 */ { "moodle-week", "moodle-month", "moodle-year" },
-		/* 7 */ { "vpn", "vpn-week", "vpn-month", "vpn-year" }
+		/* 7 */ { "vpn", "vpn-week", "vpn-month", "vpn-year" },
+		/* 8 */ { "nagvis-day", "nagvis-week", "nagvis-month", "nagvis-year" }
 			};
 		
 		if (task != null)
