@@ -24,6 +24,23 @@ public class StatisticsActivity extends ListActivity implements OnItemClickListe
 	int category;
 	
 	static final String WEBSITE = "http://www.hs-weingarten.de/web/rechenzentrum/zahlen-und-fakten";
+
+	public static final String STATISTIC_TITLES[] = {
+			null, "Internet", "IPv6", "E-Mail", "Wireless-LAN", "LSF", "Moodle", "VPN", "Monitoring",
+			};
+	public static final String STATISTICS[][] = { 
+			/* 0 */	{ "internet", "internet-ipv6", "email", "wlan-hswgt2", "lsf", "moodle-week", "vpn", "nagvis-day" },
+			/* 1 */ { "internet", "internet-month", "internet-year" },
+			/* 2 */ { "internet-ipv6", "internet-ipv6-month", "internet-ipv6-year", "internet-ipv6-percent", "internet-ipv6-percent-year" },
+			/* 3 */ { "email", "email-week", "email-month", "email-year" },
+			/* 4 */ { "wlan-hrw", "wlan-hrw-week", "wlan-hrw-month", "wlan-hrw-year", 
+				"wlan-hswgt2", "wlan-hswgt2-week", "wlan-hswgt2-month", "wlan-hswgt2-year",
+				"wlan-eduroam", "wlan-eduroam-week", "wlan-eduroam-month", "wlan-eduroam-year" },
+				/* 5 */ { "lsf", "lsf-week", "lsf-month", "lsf-year" },
+				/* 6 */ { "moodle-week", "moodle-month", "moodle-year" },
+				/* 7 */ { "vpn", "vpn-week", "vpn-month", "vpn-year" },
+				/* 8 */ { "nagvis-day", "nagvis-week", "nagvis-month", "nagvis-year" }
+	};
 	
 	private class PictureBundle {
 		int index;
@@ -94,30 +111,14 @@ public class StatisticsActivity extends ListActivity implements OnItemClickListe
 	
 	RefreshTask task = null;
 
-	String titles[] = {
-			null, "Internet", "IPv6", "E-Mail", "Wireless-LAN", "LSF", "Moodle", "VPN"
-			};
 	
 	private void refresh() {
-		String urls[][] = { 
-		/* 0 */	{ "internet", "internet-ipv6", "email", "wlan-hswgt2", "lsf", "moodle-week", "vpn", "nagvis-day" },
-		/* 1 */ { "internet", "internet-month", "internet-year" },
-		/* 2 */ { "internet-ipv6", "internet-ipv6-month", "internet-ipv6-year", "internet-ipv6-percent", "internet-ipv6-percent-year" },
-		/* 3 */ { "email", "email-week", "email-month", "email-year" },
-		/* 4 */ { "wlan-hrw", "wlan-hrw-week", "wlan-hrw-month", "wlan-hrw-year", 
-				  "wlan-hswgt2", "wlan-hswgt2-week", "wlan-hswgt2-month", "wlan-hswgt2-year",
-				  "wlan-eduroam", "wlan-eduroam-week", "wlan-eduroam-month", "wlan-eduroam-year" },
-		/* 5 */ { "lsf", "lsf-week", "lsf-month", "lsf-year" },
-		/* 6 */ { "moodle-week", "moodle-month", "moodle-year" },
-		/* 7 */ { "vpn", "vpn-week", "vpn-month", "vpn-year" },
-		/* 8 */ { "nagvis-day", "nagvis-week", "nagvis-month", "nagvis-year" }
-			};
 		
 		if (task != null)
 			task.cancel(false);
 		task = new RefreshTask();
-		adapter.invalidate(urls[category].length);
-		task.execute(urls[category]);
+		adapter.invalidate(STATISTICS[category].length);
+		task.execute(STATISTICS[category]);
 	}
 	
 	@Override
@@ -133,7 +134,7 @@ public class StatisticsActivity extends ListActivity implements OnItemClickListe
 		if (getIntent() != null) {
 			if (getIntent().getExtras() != null) {
 				category = (int) getIntent().getExtras().getLong("category");
-				setTitle(getTitle() + " - " + titles[category]);
+				setTitle(getTitle() + " - " + STATISTIC_TITLES[category]);
 			}
 		}
 		refresh();
