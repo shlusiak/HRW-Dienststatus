@@ -2,12 +2,15 @@ package de.saschahlusiak.hrw.dienststatus.statistic;
 
 import android.app.ListActivity;
 import android.app.ListFragment;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.AsyncTask.Status;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -24,6 +27,9 @@ import de.saschahlusiak.hrw.dienststatus.model.HRWNode;
 public class StatisticsFragment extends ListFragment implements OnItemClickListener {
 	private StatisticsAdapter adapter;
 	int category;
+	Menu optionsMenu;
+	View mRefreshIndeterminateProgressView;
+
 	
 	static final String WEBSITE = "http://www.hs-weingarten.de/web/rechenzentrum/zahlen-und-fakten";
 	
@@ -40,9 +46,11 @@ public class StatisticsFragment extends ListFragment implements OnItemClickListe
 	
 	private class RefreshTask extends AsyncTask<String, PictureBundle, String> {
 		@Override
-		protected void onPreExecute() {
-			super.onPreExecute();
+		protected void onPreExecute() {			
+			setProgressActionView(true);
+			super.onPreExecute();			
 		}
+		
 		@Override
 		protected String doInBackground(String... urls) {
 			InputStream is;
@@ -85,6 +93,7 @@ public class StatisticsFragment extends ListFragment implements OnItemClickListe
 		
 		@Override
 		protected void onCancelled() {
+			setProgressActionView(false);			
 			adapter.setLoading(-1);
 			adapter.notifyDataSetChanged();
 			super.onCancelled();
@@ -92,8 +101,9 @@ public class StatisticsFragment extends ListFragment implements OnItemClickListe
 
 		@Override
 		protected void onPostExecute(String result) {
-			if (result != null)
+			if (result != null && getActivity() != null)
 				Toast.makeText(getActivity(), result, Toast.LENGTH_SHORT).show();
+			setProgressActionView(false);
 			adapter.setLoading(-1);
 			adapter.notifyDataSetChanged();
 			super.onPostExecute(result);
@@ -143,6 +153,18 @@ public class StatisticsFragment extends ListFragment implements OnItemClickListe
 		this.mListener = (OnStatisticClicked) getActivity();
 		getListView().setOnItemClickListener(this);
 		
+		if (category != 0) {
+			getActivity().getActionBar().setTitle(R.string.tab_statistics);
+			getActivity().getActionBar().setSubtitle(StatisticsActivity.STATISTIC_TITLES[category]);
+		} else {
+			getActivity().getActionBar().setTitle(R.string.tab_statistics);
+			getActivity().getActionBar().setSubtitle(null);
+		}
+		
+		getActivity().getActionBar().setDisplayHomeAsUpEnabled(category > 0);
+		getActivity().getActionBar().setHomeButtonEnabled(category > 0);
+		
+		/* first fragment, refresh to fetch images */
 		if (task == null)
 			refresh();		
 	}
@@ -152,12 +174,20 @@ public class StatisticsFragment extends ListFragment implements OnItemClickListe
 		super.onStart();
 		
 		//	setTitle(getTitle() + " - " + titles[category]);
+	}
+	
+	@Override
+	public void onStop() {
 		
+		super.onStop();
 	}
 	
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		inflater.inflate(R.menu.optionsmenu_statistics, menu);		
+		inflater.inflate(R.menu.optionsmenu_statistics, menu);
+		optionsMenu = menu;
+		if (task != null && task.getStatus() == Status.RUNNING)
+			setProgressActionView(true);
 	}
 
 	@Override
@@ -197,5 +227,26 @@ public class StatisticsFragment extends ListFragment implements OnItemClickListe
 		
 		mListener.onStatisticClicked(this, (int)id + 1);
 	}
+	
+	void setProgressActionView(boolean refreshing) {
+		if (optionsMenu == null)
+			return;
+        final MenuItem refreshItem = optionsMenu.findItem(R.id.refresh);
+        if (refreshItem != null) {
+            if (refreshing) {
+                if (mRefreshIndeterminateProgressView == null) {
+                    LayoutInflater inflater = (LayoutInflater)
+                            getActivity().getSystemService(
+                                    Context.LAYOUT_INFLATER_SERVICE);
+                    mRefreshIndeterminateProgressView = inflater.inflate(
+                            R.layout.actionbar_indeterminate_progress, null);
+                }
+
+                refreshItem.setActionView(mRefreshIndeterminateProgressView);
+            } else {
+                refreshItem.setActionView(null);
+            }
+        }
+	}	
 
 }
