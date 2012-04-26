@@ -280,7 +280,7 @@ public class DienststatusFragment extends ListFragment implements OnItemClickLis
 			Log.d(tag, "onPostExecute(" + result + ")");
 			if (result == null)
 				adapter.fillLevel(level);
-			else {
+			else if (getActivity() != null) {
 				Toast.makeText(getActivity(), result, Toast.LENGTH_SHORT).show();
 			}
 			super.onPostExecute(result);
