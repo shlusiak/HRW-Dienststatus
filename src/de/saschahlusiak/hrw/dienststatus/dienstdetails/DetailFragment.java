@@ -1,11 +1,14 @@
 package de.saschahlusiak.hrw.dienststatus.dienstdetails;
 
 import de.saschahlusiak.hrw.dienststatus.R;
+import de.saschahlusiak.hrw.dienststatus.dienste.DienststatusFragment;
 import de.saschahlusiak.hrw.dienststatus.model.Dienststatus;
 import de.saschahlusiak.hrw.dienststatus.model.HRWNode;
 import android.app.Fragment;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.AsyncTask.Status;
@@ -112,10 +115,30 @@ public class DetailFragment extends Fragment {
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
+		Intent intent;
 		switch (item.getItemId()) {
 		case R.id.refresh:
 			refresh();
 			break;
+		case R.id.gotowebsite:
+			intent = new Intent(
+					"android.intent.action.VIEW",
+					Uri.parse(DienststatusFragment.WEBSITE));
+			startActivity(intent);
+			break;
+		case R.id.sendemail:
+			try {
+				intent = new Intent(Intent.ACTION_SEND);
+				intent.setType("plain/text");
+				intent.putExtra(Intent.EXTRA_EMAIL, new String[] { "rz-service@hs-weingarten.de" });
+				intent.putExtra(Intent.EXTRA_SUBJECT, "Frage an das Rechenzentrum");
+				intent.putExtra(Intent.EXTRA_TEXT, "Siehe: <br>" + DienststatusFragment.WEBSITE + " ,<br>" + node.getFullPath() + "<br><br>");
+				startActivity(intent);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			break;
+			
 		default:
 			return super.onOptionsItemSelected(item);
 		}
