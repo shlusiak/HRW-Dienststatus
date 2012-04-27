@@ -4,6 +4,9 @@ import de.saschahlusiak.hrw.dienststatus.dienstdetails.DetailFragment;
 import de.saschahlusiak.hrw.dienststatus.dienste.DienststatusFragment;
 import de.saschahlusiak.hrw.dienststatus.dienste.DienststatusFragment.OnNodeClicked;
 import de.saschahlusiak.hrw.dienststatus.model.HRWNode;
+import de.saschahlusiak.hrw.dienststatus.model.NewsItem;
+import de.saschahlusiak.hrw.dienststatus.news.NewsListFragment;
+import de.saschahlusiak.hrw.dienststatus.news.NewsListFragment.OnNewsClicked;
 import de.saschahlusiak.hrw.dienststatus.statistic.StatisticsFragment;
 import de.saschahlusiak.hrw.dienststatus.statistic.StatisticsFragment.OnStatisticClicked;
 import android.app.ActionBar;
@@ -21,18 +24,16 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.Window;
 
-public class MainActivity extends Activity implements OnNodeClicked, OnStatisticClicked{
+public class MainActivity extends Activity implements OnNodeClicked, OnStatisticClicked, OnNewsClicked {
 	static final String tag = MainActivity.class.getSimpleName();
 	boolean isCreated = false;
 	
-	class DienststatusTabListener implements TabListener {
+	abstract class MyTabListener implements TabListener {
 		Fragment f;
-		boolean flat;
 		String tag;
 
-		DienststatusTabListener(boolean flat) {
-			this.flat = flat;
-			this.tag = flat ? "warning" : "all";
+		MyTabListener(String tag) {
+			this.tag = tag;
 
 			f = getFragmentManager().findFragmentById(android.R.id.content);
             if (f != null && !f.isDetached() && f.getTag().equals(tag)) {
@@ -53,11 +54,9 @@ public class MainActivity extends Activity implements OnNodeClicked, OnStatistic
 					return;
 			
 			if (f == null) {
-				f = new DienststatusFragment(flat ? null : "all");
+				f = createFragment();
 				ft.replace(android.R.id.content, f, tag);
 			} else {
-//				ft.replace(android.R.id.content, f, tag);
-				
 				ft.attach(f);
 			}
 		}
@@ -74,51 +73,48 @@ public class MainActivity extends Activity implements OnNodeClicked, OnStatistic
 			
 			f = null;
 		}
+		
+		abstract Fragment createFragment();
 	}
 	
-	class StatisticsTabListener implements TabListener {
-		Fragment f;
+	class DienststatusTabListener extends MyTabListener {
+		boolean flat;
+		public DienststatusTabListener(boolean flat) {
+			super(flat ? "warning" : "all");
+			this.flat = flat;
+		}
 		
+		@Override
+		Fragment createFragment() {
+			return new DienststatusFragment(flat ? null : "all");
+		}
+		
+	}
+	
+	class StatisticsTabListener extends MyTabListener {
 		public StatisticsTabListener() {
-			f = getFragmentManager().findFragmentById(android.R.id.content);
-            if (f != null && !f.isDetached() && f.getTag().equals("statistics")) {
-                FragmentTransaction ft = getFragmentManager().beginTransaction();
-                ft.detach(f);
-                ft.commit();
-            } else
-            	f = null;			
+			super("statistics");
+		}
+
+		@Override
+		Fragment createFragment() {
+			return new StatisticsFragment();
 		}
 		
-		@Override
-		public void onTabReselected(Tab tab, FragmentTransaction ft) {
-		}
-
-		@Override
-		public void onTabSelected(Tab tab, FragmentTransaction ft) {
-			if (!isCreated && f == null)
-				return;
-			if (f == null) {
-				f = new StatisticsFragment(0);
-				ft.replace(android.R.id.content, f, "statistics");
-			} else {
-				ft.attach(f);
-			}
-		}
-
-		@Override
-		public void onTabUnselected(Tab tab, FragmentTransaction ft) {
-			if (f != null)
-				ft.detach(f);
-
-			FragmentManager fm = getFragmentManager();
-			if (fm.getBackStackEntryCount() > 0)
-				fm.popBackStack(fm.getBackStackEntryAt(0).getName(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
-			getActionBar().setDisplayHomeAsUpEnabled(false);
-			getActionBar().setHomeButtonEnabled(false);
-			
-			f = null;
-		}
 	}	
+
+	class NewsTabListener extends MyTabListener {
+		public NewsTabListener() {
+			super("news");
+		}
+
+		@Override
+		Fragment createFragment() {
+			return new NewsListFragment();
+		}
+		
+	}	
+	
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -140,9 +136,9 @@ public class MainActivity extends Activity implements OnNodeClicked, OnStatistic
 		getActionBar().addTab(getActionBar().newTab()
 				.setText(R.string.tab_statistics)
 				.setTabListener(new StatisticsTabListener()));
-//		getActionBar().addTab(getActionBar().newTab()
-//				.setText("News")
-//				.setTabListener(new MyTabListener()));
+		getActionBar().addTab(getActionBar().newTab()
+				.setText(R.string.news)
+				.setTabListener(new NewsTabListener()));
 
 		getActionBar().setHomeButtonEnabled(false);
 		getActionBar().setDisplayHomeAsUpEnabled(false);
@@ -231,5 +227,10 @@ public class MainActivity extends Activity implements OnNodeClicked, OnStatistic
 //		Log.v(tag, "pushing new " + node.getParentId());
 		fragmentTransaction.addToBackStack(null);
 		fragmentTransaction.commit();
+	}
+
+	@Override
+	public void onNewsDetails(NewsListFragment fragment, NewsItem item) {
+		
 	}
 }
