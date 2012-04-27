@@ -145,9 +145,7 @@ public class NewsListFragment extends ListFragment implements OnItemClickListene
 		NewsItem news;
 
 		news = (NewsItem) adapter.getItem(position);
-//		Intent intent = new Intent(getActivity, NewsItemActivity.class);
-//		intent.putExtra("newsItem", news);
-//		startActivity(intent);		
+		mListener.onNewsDetails(this, news);
 	}
 
 	@Override

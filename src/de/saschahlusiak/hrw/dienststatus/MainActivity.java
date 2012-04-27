@@ -5,6 +5,7 @@ import de.saschahlusiak.hrw.dienststatus.dienste.DienststatusFragment;
 import de.saschahlusiak.hrw.dienststatus.dienste.DienststatusFragment.OnNodeClicked;
 import de.saschahlusiak.hrw.dienststatus.model.HRWNode;
 import de.saschahlusiak.hrw.dienststatus.model.NewsItem;
+import de.saschahlusiak.hrw.dienststatus.news.NewsItemFragment;
 import de.saschahlusiak.hrw.dienststatus.news.NewsListFragment;
 import de.saschahlusiak.hrw.dienststatus.news.NewsListFragment.OnNewsClicked;
 import de.saschahlusiak.hrw.dienststatus.statistic.StatisticsFragment;
@@ -231,6 +232,16 @@ public class MainActivity extends Activity implements OnNodeClicked, OnStatistic
 
 	@Override
 	public void onNewsDetails(NewsListFragment fragment, NewsItem item) {
-		
+		FragmentManager fragmentManager = getFragmentManager();
+		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+		fragmentTransaction.setCustomAnimations(
+				R.animator.fragment_slide_left_enter,
+                R.animator.fragment_slide_left_exit /*,
+                R.animator.fragment_slide_right_enter,
+                R.animator.fragment_slide_right_exit */);
+		fragmentTransaction.replace(android.R.id.content, new NewsItemFragment(item), fragment.getTag());
+//		Log.v(tag, "pushing new " + node.getParentId());
+		fragmentTransaction.addToBackStack(null);
+		fragmentTransaction.commit();
 	}
 }
