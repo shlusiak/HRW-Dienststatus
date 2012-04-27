@@ -1,15 +1,15 @@
-package de.saschahlusiak.hrw.dienststatus.news;
+package de.saschahlusiak.hrw.dienststatus.model;
 
 import java.io.Serializable;
 
 public class NewsItem implements Serializable {
 	private static final long serialVersionUID = 7804036429254970248L;
 	
-	String header, title;
-	String teaser;
-	String pictureURL;
+	public String header, title;
+	public String teaser;
+	public String pictureURL;
 	
-	NewsItem() {
+	public NewsItem() {
 		teaser = header = title = pictureURL = null;
 	}
 }

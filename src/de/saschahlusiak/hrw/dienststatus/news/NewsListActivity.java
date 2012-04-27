@@ -15,6 +15,8 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 import de.saschahlusiak.hrw.dienststatus.AboutActivity;
 import de.saschahlusiak.hrw.dienststatus.R;
+import de.saschahlusiak.hrw.dienststatus.model.NewsItem;
+import de.saschahlusiak.hrw.dienststatus.model.NewsProvider;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
@@ -39,92 +41,11 @@ public class NewsListActivity extends Activity implements OnItemClickListener {
 	ProgressBar progress;
 	
 	private static final String WEBSITE = "http://www.hs-weingarten.de/web/rechenzentrum/aktuelles";
-
 	private static final String tag = NewsListActivity.class.getSimpleName();
-	private static final String CONTENT_URL =
-			"http://portal.hs-weingarten.de/xml/web/rechenzentrum-intranet/aktuelles/-/101_INSTANCE_Ao9p?startpage=true&language=de&articleId=@articleId@&groupId=@groupId@&cur=@cur@&portletInstance=@portletInstanceName@&showIframe=@showIframe@&isArticle=@isArticle@&internet=true";
-//	private static final String CONTENT_URL = "http://192.168.83.45/bla.xml";
 
 	
-	private class RefreshTask extends AsyncTask<Void, NewsItem, String> {
+	public class RefreshTask extends AsyncTask<Void, NewsItem, String> implements NewsProvider.OnNewNewsItem {
 		ArrayList<NewsItem> mynodes = new ArrayList<NewsItem>();
-
-		class MyParser extends DefaultHandler {
-			Stack<String> current;
-			String s;
-			NewsItem news;
-			boolean inContent;
-
-			MyParser() {
-				current = null;
-				news = null;
-				inContent = false;
-			}
-
-			@Override
-			public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
-				if (localName.equals("xml-dataset"))
-					news = new NewsItem();
-
-				if (inContent) {
-					int i;
-					s += "<" + localName;
-					for (i = 0; i < attributes.getLength(); i++) {
-						s += " " + attributes.getLocalName(i);
-						s += "=\"" + attributes.getValue(i) + "\"";
-					}
-					current.push(s);
-				}
-				s = "";
-
-				if (localName.equals("xml-data-1")
-				 || localName.equals("xml-data-2")
-				 || localName.equals("xml-data-3")
-				 || localName.equals("xml-data-4")) {
-					inContent = true;
-					current = new Stack<String>();
-				}
-			}
-
-			@Override
-			public void characters(char[] ch, int start, int length)
-					throws SAXException {
-				s += String.copyValueOf(ch, start, length);
-			}
-
-			@Override
-			public void endElement(String uri, String localName, String qName)
-					throws SAXException {
-				if (localName.equals("xml-dataset")) {
-					publishProgress(news);
-					news = null;
-					current = null;
-				} else if (localName.equals("xml-data-1")) {
-					news.header = s;
-					current = null;
-					inContent = false;
-				} else if (localName.equals("xml-data-2")) {
-					news.title = s;
-					current = null;
-					inContent = false;
-				} else if (localName.equals("xml-data-3")) {
-					news.pictureURL = s;
-					current = null;
-					inContent = false;
-				} else if (localName.equals("xml-data-4")) {
-					news.teaser = s;
-					current = null;
-					inContent = false;
-				} else if (inContent) {
-					/* we are inside an element, record subelements */
-					if (s.equals("")) {
-						s = current.pop() + " />";
-					} else {
-						s = current.pop() + ">" + s + "</" + localName + ">";
-					}
-				}
-			}
-		}
 		
 		@Override
 		protected void onPreExecute() {
@@ -136,37 +57,7 @@ public class NewsListActivity extends Activity implements OnItemClickListener {
 		
 		@Override
 		protected String doInBackground(Void... args) {
-			try {
-				DefaultHttpClient client = new DefaultHttpClient();
-				final HttpResponse resp = client.execute(new HttpGet(CONTENT_URL));
-
-				final StatusLine status = resp.getStatusLine();
-				if (isCancelled())
-					return getString(R.string.cancelled);
-				if (status.getStatusCode() != 200) {
-					Log.d(tag,
-							"HTTP error, invalid server status code: "
-									+ resp.getStatusLine());
-
-					return getString(R.string.invalid_http_status, resp.getStatusLine());
-				}
-
-				SAXParserFactory spf = SAXParserFactory.newInstance();
-				SAXParser sp = spf.newSAXParser();
-				if (isCancelled())
-					return getString(R.string.cancelled);
-				sp.parse(resp.getEntity().getContent(), new MyParser());
-			} catch (UnknownHostException e) { 
-				Log.e(tag, e.getMessage());
-				return getString(R.string.connection_error);
-			} catch (Exception e) {
-				Log.e(tag, e.getMessage());
-				if (isCancelled())
-					return getString(R.string.cancelled);
-				return getString(R.string.connection_error);
-			}
-
-			return null;
+			return NewsProvider.fetchNews(NewsListActivity.this, this);
 		}
 		
 		@Override
@@ -190,6 +81,11 @@ public class NewsListActivity extends Activity implements OnItemClickListener {
 				Toast.makeText(NewsListActivity.this, result, Toast.LENGTH_SHORT).show();
 			progress.setVisibility(View.GONE);
 			super.onPostExecute(result);
+		}
+
+		@Override
+		public void onNewNewsItem(NewsItem item) {
+			publishProgress(item);
 		}
 	}
 	

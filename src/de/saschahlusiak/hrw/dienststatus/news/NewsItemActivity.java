@@ -1,6 +1,7 @@
 package de.saschahlusiak.hrw.dienststatus.news;
 
 import de.saschahlusiak.hrw.dienststatus.R;
+import de.saschahlusiak.hrw.dienststatus.model.NewsItem;
 import android.app.Activity;
 import android.graphics.Color;
 import android.os.Bundle;

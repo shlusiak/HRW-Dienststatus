@@ -3,6 +3,7 @@ package de.saschahlusiak.hrw.dienststatus.news;
 import java.util.ArrayList;
 
 import de.saschahlusiak.hrw.dienststatus.R;
+import de.saschahlusiak.hrw.dienststatus.model.NewsItem;
 
 import android.content.Context;
 import android.view.LayoutInflater;
