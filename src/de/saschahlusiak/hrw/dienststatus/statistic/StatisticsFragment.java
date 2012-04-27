@@ -39,7 +39,7 @@ public class StatisticsFragment extends ListFragment implements OnItemClickListe
 	
 	OnStatisticClicked mListener;
 	
-	private class PictureBundle {
+	private static class PictureBundle {
 		int index;
 		BitmapDrawable d;
 	};
@@ -162,7 +162,12 @@ public class StatisticsFragment extends ListFragment implements OnItemClickListe
 		}
 		
 		getActivity().getActionBar().setDisplayHomeAsUpEnabled(category > 0);
-		getActivity().getActionBar().setHomeButtonEnabled(category > 0);
+		getActivity().getActionBar().setHomeButtonEnabled(category > 0);	
+	}
+	
+	@Override
+	public void onStart() {
+		super.onStart();
 		
 		/* first fragment, refresh to fetch images */
 		if (task == null)
@@ -170,15 +175,11 @@ public class StatisticsFragment extends ListFragment implements OnItemClickListe
 	}
 	
 	@Override
-	public void onStart() {
-		super.onStart();
-		
-		//	setTitle(getTitle() + " - " + titles[category]);
-	}
-	
-	@Override
 	public void onStop() {
-		
+		if (task != null) {
+			task.cancel(false);
+			task = null;
+		}
 		super.onStop();
 	}
 	
