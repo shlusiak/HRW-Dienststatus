@@ -35,7 +35,6 @@ import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 
 public class NewsListActivity extends Activity implements OnItemClickListener {
-	WebView webView;
 	NewsAdapter adapter;
 	ListView list;
 	ProgressBar progress;
