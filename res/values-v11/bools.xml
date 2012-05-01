@@ -1,0 +1,4 @@
+<resources>
+    <bool name="isHoneycomb">true</bool>
+    <bool name="isNotHoneycomb">false</bool>
+</resources>
