@@ -16,6 +16,7 @@
         
         <activity
             android:label="@string/app_name"
+            android:enabled="@bool/isNotHoneycomb"
             android:name=".MainTabActivity" >
             <intent-filter >
                 <action android:name="android.intent.action.MAIN" />
@@ -23,7 +24,8 @@
             </intent-filter>
         </activity>
         <activity
-            android:label="Dienststatus"
+            android:label="@string/app_name"
+            android:enabled="@bool/isHoneycomb"
             android:name=".MainActivity" >
             <intent-filter >
                 <action android:name="android.intent.action.MAIN" />
@@ -59,6 +61,5 @@
             android:label="@string/news"
             android:name=".news.NewsItemActivity" >
         </activity>
-        </application>
-
+    </application>
 </manifest>
