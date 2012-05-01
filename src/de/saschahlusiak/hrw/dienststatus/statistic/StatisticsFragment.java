@@ -1,6 +1,5 @@
 package de.saschahlusiak.hrw.dienststatus.statistic;
 
-import android.app.ListActivity;
 import android.app.ListFragment;
 import android.content.Context;
 import android.content.Intent;
@@ -20,9 +19,8 @@ import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 import java.io.InputStream;
 import java.net.URL;
-import de.saschahlusiak.hrw.dienststatus.AboutActivity;
 import de.saschahlusiak.hrw.dienststatus.R;
-import de.saschahlusiak.hrw.dienststatus.model.HRWNode;
+import de.saschahlusiak.hrw.dienststatus.model.StatisticsProvider;
 
 public class StatisticsFragment extends ListFragment implements OnItemClickListener {
 	private StatisticsAdapter adapter;
@@ -45,23 +43,31 @@ public class StatisticsFragment extends ListFragment implements OnItemClickListe
 	};
 	
 	private class RefreshTask extends AsyncTask<String, PictureBundle, String> {
+		boolean force;
+		
+		public RefreshTask(boolean force) {
+			this.force = force;
+		}
+		
 		@Override
 		protected void onPreExecute() {			
 			setProgressActionView(true);
 			super.onPreExecute();			
 		}
-		
+
 		@Override
 		protected String doInBackground(String... urls) {
-			InputStream is;
 			publishProgress();
-		
+
 			for (int i=0; i < urls.length; i++) {
 				try {
+					StatisticsAdapter.Statistic s = (StatisticsAdapter.Statistic)adapter.getItem(i);
+					if (s.valid)
+						continue;
+					
 					PictureBundle b = new PictureBundle();
 					b.index = i;
-					is = (InputStream) new URL("http://static.hs-weingarten.de/portvis/" + urls[i] + ".png").getContent();
-					b.d = (BitmapDrawable)Drawable.createFromStream(is, "src");
+					b.d = StatisticsProvider.getImage(getActivity(), urls[i], force);
 					if (isCancelled())
 						break;
 					publishProgress(b);
@@ -82,9 +88,7 @@ public class StatisticsFragment extends ListFragment implements OnItemClickListe
 		protected void onProgressUpdate(PictureBundle... values) {
 			if (values != null && values.length > 0) {
 				adapter.add(values[0].d, values[0].index);
-				adapter.setLoading(values[0].index + 1);
 			} else {
-				adapter.setLoading(0);
 			}
 
 			adapter.notifyDataSetChanged();
@@ -93,8 +97,7 @@ public class StatisticsFragment extends ListFragment implements OnItemClickListe
 		
 		@Override
 		protected void onCancelled() {
-			setProgressActionView(false);			
-			adapter.setLoading(-1);
+			setProgressActionView(false);
 			adapter.notifyDataSetChanged();
 			super.onCancelled();
 		}
@@ -104,7 +107,6 @@ public class StatisticsFragment extends ListFragment implements OnItemClickListe
 			if (result != null && getActivity() != null)
 				Toast.makeText(getActivity(), result, Toast.LENGTH_SHORT).show();
 			setProgressActionView(false);
-			adapter.setLoading(-1);
 			adapter.notifyDataSetChanged();
 			super.onPostExecute(result);
 		}
@@ -113,11 +115,16 @@ public class StatisticsFragment extends ListFragment implements OnItemClickListe
 	RefreshTask task = null;
 
 	
-	private void refresh() {
-		if (task != null)
+	private void refresh(boolean force) {
+		if (task != null) {
 			task.cancel(false);
-		task = new RefreshTask();
-		adapter.invalidate(StatisticsActivity.STATISTICS[category].length);
+			try {
+				task.get();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		task = new RefreshTask(force);
 		task.execute(StatisticsActivity.STATISTICS[category]);
 	}
 	
@@ -139,6 +146,7 @@ public class StatisticsFragment extends ListFragment implements OnItemClickListe
 		setHasOptionsMenu(true);
 		adapter = new StatisticsAdapter(getActivity());
 		setListAdapter(adapter);
+		adapter.invalidate(StatisticsActivity.STATISTICS[category].length);
 	}
 	
 	@Override
@@ -171,7 +179,7 @@ public class StatisticsFragment extends ListFragment implements OnItemClickListe
 		
 		/* first fragment, refresh to fetch images */
 		if (task == null)
-			refresh();		
+			refresh(false);
 	}
 	
 	@Override
@@ -194,7 +202,8 @@ public class StatisticsFragment extends ListFragment implements OnItemClickListe
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		if (item.getItemId() == R.id.refresh) {
-			refresh();
+			adapter.invalidate(StatisticsActivity.STATISTICS[category].length);			
+			refresh(true);
 			return true;
 		}
 		if (item.getItemId() == R.id.gotowebsite) {

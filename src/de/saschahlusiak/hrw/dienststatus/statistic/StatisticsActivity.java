@@ -18,6 +18,7 @@ import java.io.InputStream;
 import java.net.URL;
 import de.saschahlusiak.hrw.dienststatus.AboutActivity;
 import de.saschahlusiak.hrw.dienststatus.R;
+import de.saschahlusiak.hrw.dienststatus.model.StatisticsProvider;
 
 public class StatisticsActivity extends ListActivity implements OnItemClickListener {
 	private StatisticsAdapter adapter;
@@ -48,21 +49,30 @@ public class StatisticsActivity extends ListActivity implements OnItemClickListe
 	};
 	
 	private class RefreshTask extends AsyncTask<String, PictureBundle, String> {
+		boolean force;
+		
+		public RefreshTask(boolean force) {
+			this.force = force;
+		}
+		
 		@Override
 		protected void onPreExecute() {
 			super.onPreExecute();
 		}
+		
 		@Override
 		protected String doInBackground(String... urls) {
-			InputStream is;
 			publishProgress();
 		
 			for (int i=0; i < urls.length; i++) {
 				try {
+					StatisticsAdapter.Statistic s = (StatisticsAdapter.Statistic)adapter.getItem(i);
+					if (s.valid)
+						continue;
+					
 					PictureBundle b = new PictureBundle();
 					b.index = i;
-					is = (InputStream) new URL("http://static.hs-weingarten.de/portvis/" + urls[i] + ".png").getContent();
-					b.d = (BitmapDrawable)Drawable.createFromStream(is, "src");
+					b.d = StatisticsProvider.getImage(StatisticsActivity.this, urls[i], force);
 					if (isCancelled())
 						break;
 					publishProgress(b);
@@ -112,12 +122,10 @@ public class StatisticsActivity extends ListActivity implements OnItemClickListe
 	RefreshTask task = null;
 
 	
-	private void refresh() {
-		
+	private void refresh(boolean force) {
 		if (task != null)
 			task.cancel(false);
-		task = new RefreshTask();
-		adapter.invalidate(STATISTICS[category].length);
+		task = new RefreshTask(force);
 		task.execute(STATISTICS[category]);
 	}
 	
@@ -137,7 +145,8 @@ public class StatisticsActivity extends ListActivity implements OnItemClickListe
 				setTitle(getTitle() + " - " + STATISTIC_TITLES[category]);
 			}
 		}
-		refresh();
+		adapter.invalidate(STATISTICS[category].length);
+		refresh(false);
 	}
 	
 	@Override
@@ -151,7 +160,8 @@ public class StatisticsActivity extends ListActivity implements OnItemClickListe
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		if (item.getItemId() == R.id.refresh) {
-			refresh();
+			adapter.invalidate(STATISTICS[category].length);			
+			refresh(true);
 			return true;
 		}
 		if (item.getItemId() == R.id.about) {

@@ -18,7 +18,7 @@ public class StatisticsAdapter extends BaseAdapter {
 	ArrayList<Statistic> items;
 	int loading;
 	
-	private class Statistic {
+	class Statistic {
 		BitmapDrawable d = null;
 		boolean valid = false;
 	}
