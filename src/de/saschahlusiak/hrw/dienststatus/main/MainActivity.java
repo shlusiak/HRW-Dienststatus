@@ -1,5 +1,11 @@
-package de.saschahlusiak.hrw.dienststatus;
+package de.saschahlusiak.hrw.dienststatus.main;
 
+import de.saschahlusiak.hrw.dienststatus.R;
+import de.saschahlusiak.hrw.dienststatus.R.animator;
+import de.saschahlusiak.hrw.dienststatus.R.id;
+import de.saschahlusiak.hrw.dienststatus.R.menu;
+import de.saschahlusiak.hrw.dienststatus.R.string;
+import de.saschahlusiak.hrw.dienststatus.about.AboutActivity;
 import de.saschahlusiak.hrw.dienststatus.dienstdetails.DetailFragment;
 import de.saschahlusiak.hrw.dienststatus.dienste.DienststatusFragment;
 import de.saschahlusiak.hrw.dienststatus.dienste.DienststatusFragment.OnNodeClicked;
@@ -89,7 +95,6 @@ public class MainActivity extends Activity implements OnNodeClicked, OnStatistic
 		Fragment createFragment() {
 			return new DienststatusFragment(flat ? null : "all");
 		}
-		
 	}
 	
 	class StatisticsTabListener extends MyTabListener {
@@ -101,8 +106,7 @@ public class MainActivity extends Activity implements OnNodeClicked, OnStatistic
 		Fragment createFragment() {
 			return new StatisticsFragment();
 		}
-		
-	}	
+	}
 
 	class NewsTabListener extends MyTabListener {
 		public NewsTabListener() {

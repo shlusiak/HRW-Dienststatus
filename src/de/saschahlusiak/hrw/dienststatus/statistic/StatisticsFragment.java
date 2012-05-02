@@ -13,6 +13,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ShareActionProvider;
 import android.widget.Toast;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
@@ -167,6 +168,19 @@ public class StatisticsFragment extends ListFragment implements OnItemClickListe
 		/* first fragment, refresh to fetch images */
 		if (task == null)
 			refresh(false);
+		
+		{
+			ShareActionProvider share = (ShareActionProvider) optionsMenu.findItem(R.id.menu_item_share).getActionProvider();
+
+			Statistic s = (Statistic) adapter.getItem(0);
+			Uri uri = Uri.fromFile(s.getCacheFile(getActivity()));
+			
+			Intent intent = new Intent(Intent.ACTION_SEND);
+			intent.setType("image/png");
+			intent.putExtra(Intent.EXTRA_STREAM, uri);
+			share.setShareIntent(intent);
+		}
+		
 	}
 
 	@Override
@@ -240,6 +254,11 @@ public class StatisticsFragment extends ListFragment implements OnItemClickListe
 		optionsMenu = menu;
 		if (task != null && task.getStatus() == Status.RUNNING)
 			setProgressActionView(true);
+		
+		if (category == 0)
+			menu.findItem(R.id.menu_item_share).setEnabled(false);
+		else
+			menu.findItem(R.id.menu_item_share).setEnabled(true);
 	}
 
 	@Override
