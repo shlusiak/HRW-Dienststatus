@@ -20,7 +20,7 @@
     <string name="invalid_http_status">Invalid HTTP status code: $1%d</string>     
     <string name="connection_error">Connection error</string>
     <string name="tab_all">All</string>
-    <string name="tab_warnings">Warning</string>
+    <string name="tab_warnings">Warnings</string>
     <string name="tab_statistics">Statistics</string>
     <string name="cancelled">Cancelled</string>
     <string name="send_email">Report problem</string>

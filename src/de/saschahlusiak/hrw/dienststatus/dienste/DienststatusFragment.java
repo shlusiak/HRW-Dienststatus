@@ -88,7 +88,7 @@ public class DienststatusFragment extends ListFragment implements OnItemClickLis
 				getActivity().getActionBar().setSubtitle(node.name);
 			}
 		} else {
-			getActivity().getActionBar().setTitle(level == null ? "Warnungen" : "Dienststatus");
+			getActivity().getActionBar().setTitle(level == null ? R.string.tab_warnings : R.string.main_name);
 			getActivity().getActionBar().setSubtitle(null);
 		}
 		
