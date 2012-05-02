@@ -39,6 +39,7 @@ import android.webkit.WebView;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.ShareActionProvider;
 import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 
@@ -150,10 +151,17 @@ public class NewsListFragment extends ListFragment implements OnItemClickListene
 
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		inflater.inflate(R.menu.optionsmenu_dienststatus, menu);
+		inflater.inflate(R.menu.optionsmenu_newslist, menu);
 		optionsMenu = menu;
 		if (task != null && task.getStatus() == Status.RUNNING)
 			setProgressActionView(true);
+		
+		ShareActionProvider share = (ShareActionProvider) menu.findItem(R.id.menu_item_share).getActionProvider();
+		
+		Intent intent = new Intent(Intent.ACTION_SEND);
+		intent.setType("text/plain");
+		intent.putExtra(Intent.EXTRA_TEXT, WEBSITE);		
+		share.setShareIntent(intent);
 	}
 	
 	@Override
@@ -181,7 +189,7 @@ public class NewsListFragment extends ListFragment implements OnItemClickListene
 		if (item.getItemId() == R.id.sendemail) {
 			try {
 				Intent intent = new Intent(Intent.ACTION_SEND);
-				intent.setType("plain/text");
+				intent.setType("text/plain");
 				intent.putExtra(Intent.EXTRA_EMAIL, new String[] { "rz-service@hs-weingarten.de" });
 				intent.putExtra(Intent.EXTRA_SUBJECT, "Frage an das Rechenzentrum");
 				intent.putExtra(Intent.EXTRA_TEXT, "Siehe: " + WEBSITE);
