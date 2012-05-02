@@ -223,7 +223,7 @@ public class StatisticsFragment extends ListFragment implements OnItemClickListe
 				intent.putExtra(Intent.EXTRA_EMAIL, new String[] { "rz-service@hs-weingarten.de" });
 				intent.putExtra(Intent.EXTRA_SUBJECT, "Frage an das Rechenzentrum");
 				intent.putExtra(Intent.EXTRA_TEXT, s.getWebURL());
-				startActivity(intent);
+				startActivity(Intent.createChooser(intent, getString(R.string.send_email)));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -263,7 +263,7 @@ public class StatisticsFragment extends ListFragment implements OnItemClickListe
 				intent.putExtra(Intent.EXTRA_EMAIL, new String[] { "rz-service@hs-weingarten.de" });
 				intent.putExtra(Intent.EXTRA_SUBJECT, "Frage an das Rechenzentrum");
 				intent.putExtra(Intent.EXTRA_TEXT, "Siehe: " + WEBSITE);
-				startActivity(intent);
+				startActivity(Intent.createChooser(intent, getString(R.string.send_email)));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

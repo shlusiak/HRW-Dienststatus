@@ -2,8 +2,6 @@ package de.saschahlusiak.hrw.dienststatus.statistic;
 
 import android.app.ListActivity;
 import android.content.Intent;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -15,8 +13,6 @@ import android.widget.AdapterView;
 import android.widget.Toast;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
-import java.io.InputStream;
-import java.net.URL;
 import de.saschahlusiak.hrw.dienststatus.AboutActivity;
 import de.saschahlusiak.hrw.dienststatus.R;
 import de.saschahlusiak.hrw.dienststatus.model.Statistic;
@@ -183,7 +179,7 @@ public class StatisticsActivity extends ListActivity implements OnItemClickListe
 				intent.putExtra(Intent.EXTRA_EMAIL, new String[] { "rz-service@hs-weingarten.de" });
 				intent.putExtra(Intent.EXTRA_SUBJECT, "Frage an das Rechenzentrum");
 				intent.putExtra(Intent.EXTRA_TEXT, s.getWebURL());
-				startActivity(intent);
+				startActivity(Intent.createChooser(intent, getString(R.string.send_email)));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -227,7 +223,7 @@ public class StatisticsActivity extends ListActivity implements OnItemClickListe
 				intent.putExtra(Intent.EXTRA_EMAIL, new String[] { "rz-service@hs-weingarten.de" });
 				intent.putExtra(Intent.EXTRA_SUBJECT, "Frage an das Rechenzentrum");
 				intent.putExtra(Intent.EXTRA_TEXT, "Siehe: " + WEBSITE);
-				startActivity(intent);
+				startActivity(Intent.createChooser(intent, getString(R.string.send_email)));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
