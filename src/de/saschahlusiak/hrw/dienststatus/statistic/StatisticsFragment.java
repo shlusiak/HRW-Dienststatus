@@ -16,10 +16,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Toast;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
+
+import java.io.File;
 import java.io.InputStream;
 import java.net.URL;
 import de.saschahlusiak.hrw.dienststatus.R;
+import de.saschahlusiak.hrw.dienststatus.model.HRWNode;
 import de.saschahlusiak.hrw.dienststatus.model.StatisticsProvider;
 
 public class StatisticsFragment extends ListFragment implements OnItemClickListener {
@@ -39,6 +43,7 @@ public class StatisticsFragment extends ListFragment implements OnItemClickListe
 	
 	private static class PictureBundle {
 		int index;
+		String url;
 		BitmapDrawable d;
 	};
 	
@@ -68,6 +73,7 @@ public class StatisticsFragment extends ListFragment implements OnItemClickListe
 					PictureBundle b = new PictureBundle();
 					b.index = i;
 					b.d = StatisticsProvider.getImage(getActivity(), urls[i], force);
+					b.url = urls[i];
 					if (isCancelled())
 						break;
 					publishProgress(b);
@@ -76,6 +82,7 @@ public class StatisticsFragment extends ListFragment implements OnItemClickListe
 					PictureBundle b = new PictureBundle();
 					b.index = i;
 					b.d = null;
+					b.url = urls[i];
 					publishProgress(b);
 //					return getString(R.string.connection_error);
 				}
@@ -87,7 +94,7 @@ public class StatisticsFragment extends ListFragment implements OnItemClickListe
 		@Override
 		protected void onProgressUpdate(PictureBundle... values) {
 			if (values != null && values.length > 0) {
-				adapter.add(values[0].d, values[0].index);
+				adapter.add(values[0].url, values[0].d, values[0].index);
 			} else {
 			}
 
@@ -160,6 +167,7 @@ public class StatisticsFragment extends ListFragment implements OnItemClickListe
 		super.onActivityCreated(savedInstanceState);
 		this.mListener = (OnStatisticClicked) getActivity();
 		getListView().setOnItemClickListener(this);
+		registerForContextMenu(getListView());
 		
 		if (category != 0) {
 			getActivity().getActionBar().setTitle(R.string.tab_statistics);
@@ -181,7 +189,7 @@ public class StatisticsFragment extends ListFragment implements OnItemClickListe
 		if (task == null)
 			refresh(false);
 	}
-	
+
 	@Override
 	public void onStop() {
 		if (task != null) {
@@ -189,6 +197,48 @@ public class StatisticsFragment extends ListFragment implements OnItemClickListe
 			task = null;
 		}
 		super.onStop();
+	}
+	
+	@Override
+	public void onCreateContextMenu(android.view.ContextMenu menu, View v,
+			android.view.ContextMenu.ContextMenuInfo menuInfo) {
+		MenuInflater inflater = getActivity().getMenuInflater();
+		inflater.inflate(R.menu.contextmenu_statistic, menu);
+		
+		String title = StatisticsActivity.STATISTIC_TITLES[category];
+		AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
+		
+		if (category == 0)
+			title = StatisticsActivity.STATISTIC_TITLES[(int)info.id + 1];
+		menu.setHeaderTitle(title);
+	}
+
+	@Override
+	public boolean onContextItemSelected(MenuItem item) {
+		StatisticsAdapter.Statistic s;
+		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
+		Intent intent;
+		s = (StatisticsAdapter.Statistic) adapter.getItem((int) info.id);
+		if (s == null || (s.d == null))
+			return false;
+
+		switch (item.getItemId()) {
+		case R.id.menu_item_share:
+			try {
+				Uri uri = Uri.fromFile(StatisticsProvider.getCacheFile(getActivity(), s.url));
+				
+				intent = new Intent(Intent.ACTION_SEND);
+				intent.setType("image/png");
+				intent.putExtra(Intent.EXTRA_STREAM, uri);
+				startActivity(Intent.createChooser(intent, getString(R.string.share)));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return true;
+
+		default:
+			return super.onContextItemSelected(item);
+		}
 	}
 	
 	@Override

@@ -26,4 +26,6 @@
     <string name="cancelled">Abgebrochen</string>
     <string name="send_email">Problem melden</string>
     <string name="news">Aktuelles</string>
+    <string name="share">Teilen</string>
+    <string name="share_image">Grafik teilen</string>
 </resources>

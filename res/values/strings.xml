@@ -26,4 +26,5 @@
     <string name="send_email">Report problem</string>
     <string name="news">News</string>
     <string name="share">Share</string>
+    <string name="share_image">Share graph image</string>
 </resources>

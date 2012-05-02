@@ -19,9 +19,11 @@ public class StatisticsAdapter extends BaseAdapter {
 	int loading;
 	
 	class Statistic {
-		BitmapDrawable d = null;
-		boolean valid = false;
+		BitmapDrawable d;
+		boolean valid;
+		String url;
 	}
+	
 	private class ViewHolder {
 		ImageView image;
 		ProgressBar progress;
@@ -47,10 +49,7 @@ public class StatisticsAdapter extends BaseAdapter {
 			int size = items.size();
 			for (int i=0; i < max - size; i++)
 			{
-				Statistic s = new Statistic();
-				s.valid = false;
-				s.d = null;
-				items.add(s);
+				items.add(new Statistic());
 			}
 		}
 		
@@ -64,7 +63,7 @@ public class StatisticsAdapter extends BaseAdapter {
 		loading = i;
 	}
 	
-	public void add(BitmapDrawable d, int i) {
+	public void add(String url, BitmapDrawable d, int i) {
 		Statistic s;
 		if (i < items.size())
 			s = items.get(i);
@@ -74,6 +73,7 @@ public class StatisticsAdapter extends BaseAdapter {
 		}
 		
 		s.d = d;
+		s.url = url;
 		if (d != null) {
 			/* width is 463px */
 			d.getBitmap().setDensity(128);

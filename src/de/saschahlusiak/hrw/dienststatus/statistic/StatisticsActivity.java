@@ -13,6 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Toast;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 import java.io.InputStream;
 import java.net.URL;
@@ -45,6 +46,7 @@ public class StatisticsActivity extends ListActivity implements OnItemClickListe
 	
 	private class PictureBundle {
 		int index;
+		String url;
 		BitmapDrawable d;
 	};
 	
@@ -73,6 +75,7 @@ public class StatisticsActivity extends ListActivity implements OnItemClickListe
 					PictureBundle b = new PictureBundle();
 					b.index = i;
 					b.d = StatisticsProvider.getImage(StatisticsActivity.this, urls[i], force);
+					b.url = urls[i];
 					if (isCancelled())
 						break;
 					publishProgress(b);
@@ -81,6 +84,7 @@ public class StatisticsActivity extends ListActivity implements OnItemClickListe
 					PictureBundle b = new PictureBundle();
 					b.index = i;
 					b.d = null;
+					b.url = urls[i];
 					publishProgress(b);
 //					return getString(R.string.connection_error);
 				}
@@ -92,7 +96,7 @@ public class StatisticsActivity extends ListActivity implements OnItemClickListe
 		@Override
 		protected void onProgressUpdate(PictureBundle... values) {
 			if (values != null && values.length > 0) {
-				adapter.add(values[0].d, values[0].index);
+				adapter.add(values[0].url, values[0].d, values[0].index);
 				adapter.setLoading(values[0].index + 1);
 			} else {
 				adapter.setLoading(0);
@@ -137,6 +141,7 @@ public class StatisticsActivity extends ListActivity implements OnItemClickListe
 		adapter = new StatisticsAdapter(this);
 		getListView().setAdapter(adapter);
 		getListView().setOnItemClickListener(this);
+		registerForContextMenu(getListView());
 		
 		category = 0;
 		if (getIntent() != null) {
@@ -147,6 +152,48 @@ public class StatisticsActivity extends ListActivity implements OnItemClickListe
 		}
 		adapter.invalidate(STATISTICS[category].length);
 		refresh(false);
+	}
+	
+	@Override
+	public void onCreateContextMenu(android.view.ContextMenu menu, View v,
+			android.view.ContextMenu.ContextMenuInfo menuInfo) {
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.contextmenu_statistic, menu);
+		
+		String title = StatisticsActivity.STATISTIC_TITLES[category];
+		AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
+		
+		if (category == 0)
+			title = StatisticsActivity.STATISTIC_TITLES[(int)info.id + 1];
+		menu.setHeaderTitle(title);
+	}
+
+	@Override
+	public boolean onContextItemSelected(MenuItem item) {
+		StatisticsAdapter.Statistic s;
+		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
+		Intent intent;
+		s = (StatisticsAdapter.Statistic) adapter.getItem((int) info.id);
+		if (s == null || (s.d == null))
+			return false;
+
+		switch (item.getItemId()) {
+		case R.id.menu_item_share:
+			try {
+				Uri uri = Uri.fromFile(StatisticsProvider.getCacheFile(this, s.url));
+				
+				intent = new Intent(Intent.ACTION_SEND);
+				intent.setType("image/png");
+				intent.putExtra(Intent.EXTRA_STREAM, uri);
+				startActivity(Intent.createChooser(intent, getString(R.string.share)));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return true;
+
+		default:
+			return super.onContextItemSelected(item);
+		}
 	}
 	
 	@Override

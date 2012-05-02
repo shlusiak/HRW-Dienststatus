@@ -15,10 +15,9 @@ public class StatisticsProvider {
 	private static final int TIMEOUT = 30; /* minutes */
 	
 	public static BitmapDrawable getImage(Context context, String url, boolean force) {
-		File cache_dir = context.getCacheDir();
-		File file = new File(cache_dir, url + ".png");
+		File file = getCacheFile(context, url);
 
-		/* use cached file if younger than 15 minutes */
+		/* use cached file if younger than TIMEOUT minutes */
 		if (force || (file.lastModified() < System.currentTimeMillis() - TIMEOUT * 60 * 1000)) {
 			try {
 				InputStream myInput = (InputStream) new URL("http://static.hs-weingarten.de/portvis/" + url + ".png").getContent();
@@ -40,6 +39,7 @@ public class StatisticsProvider {
 				myOutput.flush();
 				myInput.close();
 				myOutput.close();
+				file.setReadable(true, false);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -49,5 +49,10 @@ public class StatisticsProvider {
 				
 		BitmapDrawable b = (BitmapDrawable) BitmapDrawable.createFromPath(file.getPath());
 		return b;
+	}
+
+	public static File getCacheFile(Context context, String url) {
+		File cache_dir = context.getCacheDir();
+		return new File(cache_dir, url + ".png");
 	}
 }
