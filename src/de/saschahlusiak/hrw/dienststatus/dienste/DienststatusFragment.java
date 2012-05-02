@@ -158,7 +158,7 @@ public class DienststatusFragment extends ListFragment implements OnItemClickLis
 		case R.id.details:
 			mListener.onNodeDetails(this, node);
 			return true;
-			
+
 		case R.id.sendemail:
 			try {
 				intent = new Intent(Intent.ACTION_SEND);

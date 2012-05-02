@@ -32,12 +32,12 @@ public class StatisticsActivity extends ListActivity implements OnItemClickListe
 			/* 2 */ { "internet-ipv6", "internet-ipv6-month", "internet-ipv6-year", "internet-ipv6-percent", "internet-ipv6-percent-year" },
 			/* 3 */ { "email", "email-week", "email-month", "email-year" },
 			/* 4 */ { "wlan-hrw", "wlan-hrw-week", "wlan-hrw-month", "wlan-hrw-year", 
-				"wlan-hswgt2", "wlan-hswgt2-week", "wlan-hswgt2-month", "wlan-hswgt2-year",
-				"wlan-eduroam", "wlan-eduroam-week", "wlan-eduroam-month", "wlan-eduroam-year" },
-				/* 5 */ { "lsf", "lsf-week", "lsf-month", "lsf-year" },
-				/* 6 */ { "moodle-week", "moodle-month", "moodle-year" },
-				/* 7 */ { "vpn", "vpn-week", "vpn-month", "vpn-year" },
-				/* 8 */ { "nagvis-day", "nagvis-week", "nagvis-month", "nagvis-year" }
+					  "wlan-hswgt2", "wlan-hswgt2-week", "wlan-hswgt2-month", "wlan-hswgt2-year",
+					  "wlan-eduroam", "wlan-eduroam-week", "wlan-eduroam-month", "wlan-eduroam-year" },
+			/* 5 */ { "lsf", "lsf-week", "lsf-month", "lsf-year" },
+			/* 6 */ { "moodle-week", "moodle-month", "moodle-year" },
+			/* 7 */ { "vpn", "vpn-week", "vpn-month", "vpn-year" },
+			/* 8 */ { "nagvis-day", "nagvis-week", "nagvis-month", "nagvis-year" }
 	};
 	
 	private class RefreshTask extends AsyncTask<String, Statistic, String> {
