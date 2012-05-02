@@ -12,13 +12,14 @@ import android.util.Log;
 
 public class StatisticsProvider {
 	private static final String tag = StatisticsProvider.class.getSimpleName();
+	private static final int TIMEOUT = 30; /* minutes */
 	
 	public static BitmapDrawable getImage(Context context, String url, boolean force) {
 		File cache_dir = context.getCacheDir();
 		File file = new File(cache_dir, url + ".png");
 
 		/* use cached file if younger than 15 minutes */
-		if (force || (file.lastModified() < System.currentTimeMillis() - 15 * 60 * 1000)) {
+		if (force || (file.lastModified() < System.currentTimeMillis() - TIMEOUT * 60 * 1000)) {
 			try {
 				InputStream myInput = (InputStream) new URL("http://static.hs-weingarten.de/portvis/" + url + ".png").getContent();
 				OutputStream myOutput = new FileOutputStream(file);
