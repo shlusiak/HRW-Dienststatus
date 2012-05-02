@@ -32,6 +32,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".preferences.DienststatusPreferencesActivity"
+            android:label="@string/preferences" >
+              <intent-filter>
+                <category android:name="android.intent.category.PREFERENCE"></category>
+                <action android:name="android.intent.action.MAIN"></action>
+              </intent-filter>
+        </activity>
         
         <activity
             android:label="@string/main_name"
@@ -52,6 +60,10 @@
             android:label="@string/about_app_name"
             android:theme="@style/Theme.HRW.Dialog"
             android:name=".about.AboutActivity" >
+            <intent-filter>
+                <action android:name="de.saschahlusiak.hrw.dienststatus.SHOW_ABOUT" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
         </activity>
         <activity
             android:label="@string/news"

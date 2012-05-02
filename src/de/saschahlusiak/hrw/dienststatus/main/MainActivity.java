@@ -14,6 +14,7 @@ import de.saschahlusiak.hrw.dienststatus.model.NewsItem;
 import de.saschahlusiak.hrw.dienststatus.news.NewsItemFragment;
 import de.saschahlusiak.hrw.dienststatus.news.NewsListFragment;
 import de.saschahlusiak.hrw.dienststatus.news.NewsListFragment.OnNewsClicked;
+import de.saschahlusiak.hrw.dienststatus.preferences.DienststatusPreferencesActivity;
 import de.saschahlusiak.hrw.dienststatus.statistic.StatisticsFragment;
 import de.saschahlusiak.hrw.dienststatus.statistic.StatisticsFragment.OnStatisticClicked;
 import android.app.ActionBar;
@@ -180,8 +181,8 @@ public class MainActivity extends Activity implements OnNodeClicked, OnStatistic
 			FragmentManager fragmentManager = getFragmentManager();			
 			fragmentManager.popBackStack();
 			break;
-		case R.id.about:
-			Intent intent = new Intent(this, AboutActivity.class);
+		case R.id.preferences:
+			Intent intent = new Intent(this, DienststatusPreferencesActivity.class);
 			startActivity(intent);
 			break;
 		

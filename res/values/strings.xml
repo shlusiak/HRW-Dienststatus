@@ -28,4 +28,7 @@
     <string name="share">Share</string>
     <string name="share_image">Share graph</string>
     <string name="rz_service_email">rz-service@hs-weingarten.de</string>
+    <string name="preferences">Settings</string>
+    <string name="prefs_go_to_market">App in Google Play...</string>
+    <string name="prefs_go_to_market_long">Rate or leave a comment</string>
 </resources>

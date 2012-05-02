@@ -13,7 +13,6 @@
     <string name="showdetails">Details zeigen</string>
     <string name="openinbrowser">Link im Browser öffnen</string>
     <string name="gotowebsite">Website öffnen</string>
-    <string name="preferences">Einstellungen</string>
     <string name="about">Über...</string>
     <string name="about_app_name">HRW Dienststatus App</string>
     <string name="about_app_long">Zeigt den Dienststatus der Hochschule Ravensburg-Weingarten an.\n\nDie Information ist auch über Web abrufbar:\nhttp://www.hs-weingarten.de/web/rechenzentrum/dienststatus</string>
@@ -28,4 +27,7 @@
     <string name="news">Aktuelles</string>
     <string name="share">Teilen</string>
     <string name="share_image">Grafik teilen</string>
+    <string name="preferences">Einstellungen</string>
+    <string name="prefs_go_to_market">App in Google Play...</string>
+    <string name="prefs_go_to_market_long">Bewerten oder Kommentar abgeben</string>
 </resources>

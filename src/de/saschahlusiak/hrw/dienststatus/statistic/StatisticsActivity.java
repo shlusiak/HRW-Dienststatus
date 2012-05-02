@@ -16,6 +16,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import de.saschahlusiak.hrw.dienststatus.R;
 import de.saschahlusiak.hrw.dienststatus.about.AboutActivity;
 import de.saschahlusiak.hrw.dienststatus.model.Statistic;
+import de.saschahlusiak.hrw.dienststatus.preferences.DienststatusPreferencesActivity;
 
 public class StatisticsActivity extends ListActivity implements OnItemClickListener {
 	private StatisticsAdapter adapter;
@@ -205,8 +206,8 @@ public class StatisticsActivity extends ListActivity implements OnItemClickListe
 			refresh(true);
 			return true;
 		}
-		if (item.getItemId() == R.id.about) {
-			Intent intent = new Intent(this, AboutActivity.class);
+		if (item.getItemId() == R.id.preferences) {
+			Intent intent = new Intent(this, DienststatusPreferencesActivity.class);
 			startActivity(intent);
 		}
 		if (item.getItemId() == R.id.gotowebsite) {

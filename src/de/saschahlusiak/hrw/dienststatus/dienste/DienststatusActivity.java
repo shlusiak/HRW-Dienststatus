@@ -5,6 +5,7 @@ import de.saschahlusiak.hrw.dienststatus.about.AboutActivity;
 import de.saschahlusiak.hrw.dienststatus.dienstdetails.DetailActivity;
 import de.saschahlusiak.hrw.dienststatus.model.Dienststatus;
 import de.saschahlusiak.hrw.dienststatus.model.HRWNode;
+import de.saschahlusiak.hrw.dienststatus.preferences.DienststatusPreferencesActivity;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -241,8 +242,8 @@ public class DienststatusActivity extends Activity implements
 		 * if (item.getItemId() == R.id.preferences) { Intent intent = new
 		 * Intent(this, HRWPreferences.class); startActivity(intent); }
 		 */
-		if (item.getItemId() == R.id.about) {
-			Intent intent = new Intent(this, AboutActivity.class);
+		if (item.getItemId() == R.id.preferences) {
+			Intent intent = new Intent(this, DienststatusPreferencesActivity.class);
 			startActivity(intent);
 		}
 		if (item.getItemId() == R.id.gotowebsite) {

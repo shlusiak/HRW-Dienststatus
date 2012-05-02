@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:key="first_preferencescreen" >
+
+    <PreferenceCategory android:title="@string/about" >
+
+        <PreferenceScreen
+            android:summary="@string/prefs_go_to_market_long"
+            android:title="@string/prefs_go_to_market" >
+
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="market://details?id=de.saschahlusiak.hrw.dienststatus" />
+        </PreferenceScreen>
+
+        <PreferenceScreen
+            android:summary="Copyright (c) by Sascha Hlusiak, 2012."
+            android:title="@string/about" >
+
+            <intent android:action="de.saschahlusiak.hrw.dienststatus.SHOW_ABOUT" />
+        </PreferenceScreen>
+    </PreferenceCategory>
+
+</PreferenceScreen>
