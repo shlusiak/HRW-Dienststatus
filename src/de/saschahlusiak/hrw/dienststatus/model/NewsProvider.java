@@ -111,6 +111,8 @@ public class NewsProvider {
 		}
 	}
 	public static String fetchNews(Context context, OnNewNewsItem mListener) {
+		if (context == null)
+			return null;
 		try {
 			DefaultHttpClient client = new DefaultHttpClient();
 			final HttpResponse resp = client.execute(new HttpGet(CONTENT_URL));
