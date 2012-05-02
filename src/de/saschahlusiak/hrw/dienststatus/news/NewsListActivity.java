@@ -158,7 +158,7 @@ public class NewsListActivity extends Activity implements OnItemClickListener {
 			try {
 				Intent intent = new Intent(Intent.ACTION_SEND);
 				intent.setType("text/plain");
-				intent.putExtra(Intent.EXTRA_EMAIL, new String[] { "rz-service@hs-weingarten.de" });
+				intent.putExtra(Intent.EXTRA_EMAIL, new String[] { getString(R.string.rz_service_email) });
 				intent.putExtra(Intent.EXTRA_SUBJECT, "Frage an das Rechenzentrum");
 				intent.putExtra(Intent.EXTRA_TEXT, "Siehe: " + WEBSITE);
 				startActivity(intent);

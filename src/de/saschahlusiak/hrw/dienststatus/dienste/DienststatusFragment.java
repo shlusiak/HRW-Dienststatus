@@ -163,7 +163,7 @@ public class DienststatusFragment extends ListFragment implements OnItemClickLis
 			try {
 				intent = new Intent(Intent.ACTION_SEND);
 				intent.setType("plain/text");
-				intent.putExtra(Intent.EXTRA_EMAIL, new String[] { "rz-service@hs-weingarten.de" });
+				intent.putExtra(Intent.EXTRA_EMAIL, new String[] { getString(R.string.rz_service_email) });
 				intent.putExtra(Intent.EXTRA_SUBJECT, "Frage an das Rechenzentrum");
 				intent.putExtra(Intent.EXTRA_TEXT, "Siehe: <br>" + WEBSITE + " ,<br>" + node.getFullPath() + "<br><br>");
 				startActivity(intent);
@@ -203,7 +203,7 @@ public class DienststatusFragment extends ListFragment implements OnItemClickLis
 			try {
 				intent = new Intent(Intent.ACTION_SEND);
 				intent.setType("text/plain");
-				intent.putExtra(Intent.EXTRA_EMAIL, new String[] { "rz-service@hs-weingarten.de" });
+				intent.putExtra(Intent.EXTRA_EMAIL, new String[] { getString(R.string.rz_service_email) });
 				intent.putExtra(Intent.EXTRA_SUBJECT, "Frage an das Rechenzentrum");
 				intent.putExtra(Intent.EXTRA_TEXT, "Siehe: <br>" + WEBSITE + " ,<br>" + node.getFullPath() + "<br><br>");
 				startActivity(intent);
