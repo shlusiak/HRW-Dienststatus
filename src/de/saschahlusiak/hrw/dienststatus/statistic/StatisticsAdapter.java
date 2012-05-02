@@ -3,6 +3,7 @@ package de.saschahlusiak.hrw.dienststatus.statistic;
 import java.util.ArrayList;
 
 import de.saschahlusiak.hrw.dienststatus.R;
+import de.saschahlusiak.hrw.dienststatus.model.Statistic;
 
 import android.content.Context;
 import android.graphics.drawable.BitmapDrawable;
@@ -18,21 +19,19 @@ public class StatisticsAdapter extends BaseAdapter {
 	ArrayList<Statistic> items;
 	int loading;
 	
-	class Statistic {
-		BitmapDrawable d;
-		boolean valid;
-		String url;
-	}
-	
 	private class ViewHolder {
 		ImageView image;
 		ProgressBar progress;
 	}
 	
-	public StatisticsAdapter(Context context) {
+	public StatisticsAdapter(Context context, String urls[]) {
+		int i;
 		inflater = LayoutInflater.from(context);
 		items = new ArrayList<Statistic>();
 		loading = -1;
+		for (i = 0; i < urls.length; i++) {
+			items.add(new Statistic(i, urls[i]));
+		}
 	}
 
 	@Override
@@ -44,17 +43,9 @@ public class StatisticsAdapter extends BaseAdapter {
 		items.clear();
 	}
 	
-	public void invalidate(int max) {
-		if (items.size() < max) {
-			int size = items.size();
-			for (int i=0; i < max - size; i++)
-			{
-				items.add(new Statistic());
-			}
-		}
-		
+	public void invalidate() {
 		for (Statistic s: items) {
-			s.valid = false;
+			s.setValid(false);
 		}
 		loading = -1;
 	}
@@ -62,27 +53,23 @@ public class StatisticsAdapter extends BaseAdapter {
 	public void setLoading(int i) {
 		loading = i;
 	}
-	
-	public void add(String url, BitmapDrawable d, int i) {
-		Statistic s;
-		if (i < items.size())
-			s = items.get(i);
-		else {
-			s = new Statistic();
-			items.add(s);
-		}
 		
-		s.d = d;
-		s.url = url;
-		if (d != null) {
+	public void update(int index, BitmapDrawable bitmap) {
+		Statistic s;
+		s = items.get(index);
+		
+		s.setBitmap(bitmap);
+		if (bitmap != null) {
 			/* width is 463px */
-			d.getBitmap().setDensity(128);
+			bitmap.getBitmap().setDensity(128);
 			/* with 128dpi the image is 3.7" = 9,18cm */ 
 			/* rendering it at 256dpi, the image will be scaled up by 2 to match 9.18cm */ 
-			s.d.setTargetDensity(256);
-			s.d.setFilterBitmap(true);
+			bitmap.setTargetDensity(256);
+			bitmap.setFilterBitmap(true);
+			s.setValid(true);
+		} else {
+			s.setValid(false);
 		}
-		s.valid = (d != null);
 	}
 
 	@Override
@@ -115,9 +102,9 @@ public class StatisticsAdapter extends BaseAdapter {
 		s = items.get(position);
 
 //		convertView.setMinimumHeight(500);
-		if (s.d != null) {
+		if (s.getBitmap() != null) {
 //			b.setTargetDensity(b.getBitmap().getDensity());
-			holder.image.setImageDrawable(s.d);
+			holder.image.setImageDrawable(s.getBitmap());
 //			holder.image.setMaxHeight(10000);
 //			holder.image.setMinimumWidth(500);
 //			holder.image.setMinimumHeight(0);
@@ -126,7 +113,7 @@ public class StatisticsAdapter extends BaseAdapter {
 //			holder.image.setMinimumHeight(150);
 //			holder.image.setMaxHeight(150);
 		}
-		if (s.valid)
+		if (s.getValid())
 			holder.image.setAlpha(255);
 		else
 			holder.image.setAlpha(90);

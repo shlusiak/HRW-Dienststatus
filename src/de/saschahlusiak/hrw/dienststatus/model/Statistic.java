@@ -10,12 +10,59 @@ import android.content.Context;
 import android.graphics.drawable.BitmapDrawable;
 import android.util.Log;
 
-public class StatisticsProvider {
-	private static final String tag = StatisticsProvider.class.getSimpleName();
+public class Statistic {
+	BitmapDrawable d;
+	boolean valid;
+	String url;
+	int index;
+	
+	private static final String tag = Statistic.class.getSimpleName();
 	private static final int TIMEOUT = 30; /* minutes */
 	
-	public static BitmapDrawable getImage(Context context, String url, boolean force) {
-		File file = getCacheFile(context, url);
+	public Statistic(int index, String url) {
+		this.url = url;
+		this.index = index;
+	}
+	
+	public void setValid(boolean valid) {
+		this.valid = valid;
+	}
+	
+	public boolean getValid() {
+		return valid;
+	}
+	
+	public int getIndex() {
+		return index;
+	}
+	
+	public synchronized BitmapDrawable getBitmap() {
+		return d;
+	}
+	
+	public synchronized void setBitmap(BitmapDrawable bitmap) {
+		this.d = bitmap;
+	}
+	
+	public void setURL(String url) {
+		this.url = url;
+	}
+	
+	public String getURL() {
+		return url;
+	}
+	
+	public String getWebURL() {
+		return "http://static.hs-weingarten.de/portvis/" + url + ".png";
+	}
+	
+	public File getCacheFile(Context context) {
+		File cache_dir = context.getCacheDir();
+		return new File(cache_dir, url + ".png");
+	}
+	
+	public BitmapDrawable fetch(Context context, boolean force) {
+		File file = getCacheFile(context);
 
 		/* use cached file if younger than TIMEOUT minutes */
 		if (force || (file.lastModified() < System.currentTimeMillis() - TIMEOUT * 60 * 1000)) {
@@ -50,9 +97,5 @@ public class StatisticsProvider {
 		BitmapDrawable b = (BitmapDrawable) BitmapDrawable.createFromPath(file.getPath());
 		return b;
 	}
-
-	public static File getCacheFile(Context context, String url) {
-		File cache_dir = context.getCacheDir();
-		return new File(cache_dir, url + ".png");
-	}
+	
 }

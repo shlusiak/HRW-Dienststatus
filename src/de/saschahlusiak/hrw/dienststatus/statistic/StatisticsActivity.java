@@ -19,7 +19,7 @@ import java.io.InputStream;
 import java.net.URL;
 import de.saschahlusiak.hrw.dienststatus.AboutActivity;
 import de.saschahlusiak.hrw.dienststatus.R;
-import de.saschahlusiak.hrw.dienststatus.model.StatisticsProvider;
+import de.saschahlusiak.hrw.dienststatus.model.Statistic;
 
 public class StatisticsActivity extends ListActivity implements OnItemClickListener {
 	private StatisticsAdapter adapter;
@@ -44,13 +44,7 @@ public class StatisticsActivity extends ListActivity implements OnItemClickListe
 				/* 8 */ { "nagvis-day", "nagvis-week", "nagvis-month", "nagvis-year" }
 	};
 	
-	private class PictureBundle {
-		int index;
-		String url;
-		BitmapDrawable d;
-	};
-	
-	private class RefreshTask extends AsyncTask<String, PictureBundle, String> {
+	private class RefreshTask extends AsyncTask<String, Statistic, String> {
 		boolean force;
 		
 		public RefreshTask(boolean force) {
@@ -67,25 +61,17 @@ public class StatisticsActivity extends ListActivity implements OnItemClickListe
 			publishProgress();
 		
 			for (int i=0; i < urls.length; i++) {
+				Statistic s = (Statistic)adapter.getItem(i);
+				if (s.getValid())
+					continue;
 				try {
-					StatisticsAdapter.Statistic s = (StatisticsAdapter.Statistic)adapter.getItem(i);
-					if (s.valid)
-						continue;
-					
-					PictureBundle b = new PictureBundle();
-					b.index = i;
-					b.d = StatisticsProvider.getImage(StatisticsActivity.this, urls[i], force);
-					b.url = urls[i];
+					s.setBitmap(s.fetch(StatisticsActivity.this, force));
+					publishProgress(s);
 					if (isCancelled())
 						break;
-					publishProgress(b);
 				} catch (Exception e) {
 					e.printStackTrace();
-					PictureBundle b = new PictureBundle();
-					b.index = i;
-					b.d = null;
-					b.url = urls[i];
-					publishProgress(b);
+					publishProgress(s);
 //					return getString(R.string.connection_error);
 				}
 			}
@@ -94,10 +80,10 @@ public class StatisticsActivity extends ListActivity implements OnItemClickListe
 		}
 		
 		@Override
-		protected void onProgressUpdate(PictureBundle... values) {
+		protected void onProgressUpdate(Statistic... values) {
 			if (values != null && values.length > 0) {
-				adapter.add(values[0].url, values[0].d, values[0].index);
-				adapter.setLoading(values[0].index + 1);
+				adapter.update(values[0].getIndex(), values[0].getBitmap());
+				adapter.setLoading(values[0].getIndex() + 1);
 			} else {
 				adapter.setLoading(0);
 			}
@@ -138,11 +124,6 @@ public class StatisticsActivity extends ListActivity implements OnItemClickListe
 		super.onCreate(savedInstanceState);
 
 		
-		adapter = new StatisticsAdapter(this);
-		getListView().setAdapter(adapter);
-		getListView().setOnItemClickListener(this);
-		registerForContextMenu(getListView());
-		
 		category = 0;
 		if (getIntent() != null) {
 			if (getIntent().getExtras() != null) {
@@ -150,7 +131,10 @@ public class StatisticsActivity extends ListActivity implements OnItemClickListe
 				setTitle(getTitle() + " - " + STATISTIC_TITLES[category]);
 			}
 		}
-		adapter.invalidate(STATISTICS[category].length);
+		adapter = new StatisticsAdapter(this, StatisticsActivity.STATISTICS[category]);
+		getListView().setAdapter(adapter);
+		getListView().setOnItemClickListener(this);
+		registerForContextMenu(getListView());
 		refresh(false);
 	}
 	
@@ -170,17 +154,19 @@ public class StatisticsActivity extends ListActivity implements OnItemClickListe
 
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
-		StatisticsAdapter.Statistic s;
+		Statistic s;
 		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
 		Intent intent;
-		s = (StatisticsAdapter.Statistic) adapter.getItem((int) info.id);
-		if (s == null || (s.d == null))
+		s = (Statistic) adapter.getItem((int) info.id);
+		if (s == null)
 			return false;
 
 		switch (item.getItemId()) {
 		case R.id.menu_item_share:
+			if (s.getBitmap() == null)
+				return false;
 			try {
-				Uri uri = Uri.fromFile(StatisticsProvider.getCacheFile(this, s.url));
+				Uri uri = Uri.fromFile(s.getCacheFile(this));
 				
 				intent = new Intent(Intent.ACTION_SEND);
 				intent.setType("image/png");
@@ -190,7 +176,19 @@ public class StatisticsActivity extends ListActivity implements OnItemClickListe
 				e.printStackTrace();
 			}
 			return true;
-
+		case R.id.sendemail:
+			try {
+				intent = new Intent(Intent.ACTION_SEND);
+				intent.setType("text/plain");
+				intent.putExtra(Intent.EXTRA_EMAIL, new String[] { "rz-service@hs-weingarten.de" });
+				intent.putExtra(Intent.EXTRA_SUBJECT, "Frage an das Rechenzentrum");
+				intent.putExtra(Intent.EXTRA_TEXT, s.getWebURL());
+				startActivity(intent);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return true;
+			
 		default:
 			return super.onContextItemSelected(item);
 		}
@@ -207,7 +205,7 @@ public class StatisticsActivity extends ListActivity implements OnItemClickListe
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		if (item.getItemId() == R.id.refresh) {
-			adapter.invalidate(STATISTICS[category].length);			
+			adapter.invalidate();			
 			refresh(true);
 			return true;
 		}
