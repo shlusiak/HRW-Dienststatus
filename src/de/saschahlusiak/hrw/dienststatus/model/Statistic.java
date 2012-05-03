@@ -1,7 +1,10 @@
 package de.saschahlusiak.hrw.dienststatus.model;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
@@ -56,27 +59,33 @@ public class Statistic {
 		return "http://static.hs-weingarten.de/portvis/" + url + ".png";
 	}
 	
-	public File getCacheFile(Context context) {
-		File cache_dir = context.getCacheDir();
-		return new File(cache_dir, url + ".png");
-	}
-	
 	public boolean loadCachedBitmap(Context context) {
-		File file = getCacheFile(context);
-		BitmapDrawable b = (BitmapDrawable) BitmapDrawable.createFromPath(file.getPath());
-		if (b != null)
-			setBitmap(b);
+		BitmapDrawable b = null;
+		try {
+			FileInputStream fis = context.openFileInput(url + ".png");
+			b = (BitmapDrawable) BitmapDrawable.createFromStream(fis, null);
+			if (b != null)
+				setBitmap(b);
+			fis.close();
+		} catch (Exception e1) {
+			e1.printStackTrace();
+		}
 		return (b != null);
 	}
 	
+	public File getCacheFile(Context context) {
+		return context.getFileStreamPath(url + ".png");
+	}
+	
 	public boolean fetch(Context context, boolean force) {
-		File file = getCacheFile(context);
+		File file = context.getFileStreamPath(url + ".png");
 
 		/* use cached file if younger than TIMEOUT minutes */
 		if (force || (file.lastModified() < System.currentTimeMillis() - TIMEOUT * 60 * 1000)) {
 			try {
 				InputStream myInput = (InputStream) new URL("http://static.hs-weingarten.de/portvis/" + url + ".png").getContent();
-				OutputStream myOutput = new FileOutputStream(file);
+				OutputStream myOutput = context.openFileOutput(url + ".png", Context.MODE_WORLD_READABLE);
+				
 				byte[] buffer = new byte[4096];
 				int length;
 				while ((length = myInput.read(buffer)) > 0) {
@@ -94,7 +103,6 @@ public class Statistic {
 				myOutput.flush();
 				myInput.close();
 				myOutput.close();
-				file.setReadable(true, false);
 				return true;
 			} catch (Exception e) {
 				e.printStackTrace();
