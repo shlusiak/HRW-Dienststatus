@@ -1,20 +1,8 @@
 package de.saschahlusiak.hrw.dienststatus.news;
 
 
-import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Stack;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-import org.apache.http.HttpResponse;
-import org.apache.http.StatusLine;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
 import de.saschahlusiak.hrw.dienststatus.R;
-import de.saschahlusiak.hrw.dienststatus.about.AboutActivity;
 import de.saschahlusiak.hrw.dienststatus.model.NewsItem;
 import de.saschahlusiak.hrw.dienststatus.model.NewsProvider;
 import de.saschahlusiak.hrw.dienststatus.preferences.DienststatusPreferencesActivity;
@@ -28,7 +16,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.webkit.WebView;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ProgressBar;

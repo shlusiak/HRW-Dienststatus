@@ -1,7 +1,6 @@
 package de.saschahlusiak.hrw.dienststatus.main;
 
 import de.saschahlusiak.hrw.dienststatus.R;
-import de.saschahlusiak.hrw.dienststatus.R.string;
 import de.saschahlusiak.hrw.dienststatus.dienste.DienststatusActivity;
 import de.saschahlusiak.hrw.dienststatus.news.NewsListActivity;
 import de.saschahlusiak.hrw.dienststatus.statistic.StatisticsActivity;

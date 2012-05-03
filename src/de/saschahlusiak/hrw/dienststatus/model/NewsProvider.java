@@ -1,12 +1,9 @@
 package de.saschahlusiak.hrw.dienststatus.model;
 
 import java.net.UnknownHostException;
-import java.util.ArrayList;
 import java.util.Stack;
-
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
 import org.apache.http.client.methods.HttpGet;
@@ -14,15 +11,9 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
-
 import android.content.Context;
-import android.os.AsyncTask;
 import android.util.Log;
-import android.view.View;
-import android.widget.Toast;
 import de.saschahlusiak.hrw.dienststatus.R;
-import de.saschahlusiak.hrw.dienststatus.news.NewsListActivity;
-import de.saschahlusiak.hrw.dienststatus.news.NewsListActivity.RefreshTask;
 
 public class NewsProvider {
 	private static final String CONTENT_URL = "http://portal.hs-weingarten.de/xml/web/rechenzentrum-intranet/aktuelles/-/101_INSTANCE_Ao9p?startpage=true&language=de&articleId=@articleId@&groupId=@groupId@&cur=@cur@&portletInstance=@portletInstanceName@&showIframe=@showIframe@&isArticle=@isArticle@&internet=true";

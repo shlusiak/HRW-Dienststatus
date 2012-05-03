@@ -1,8 +1,6 @@
 package de.saschahlusiak.hrw.dienststatus.about;
 
 import de.saschahlusiak.hrw.dienststatus.R;
-import de.saschahlusiak.hrw.dienststatus.R.id;
-import de.saschahlusiak.hrw.dienststatus.R.layout;
 import android.app.Activity;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;

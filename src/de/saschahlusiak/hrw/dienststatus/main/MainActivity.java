@@ -1,11 +1,6 @@
 package de.saschahlusiak.hrw.dienststatus.main;
 
 import de.saschahlusiak.hrw.dienststatus.R;
-import de.saschahlusiak.hrw.dienststatus.R.animator;
-import de.saschahlusiak.hrw.dienststatus.R.id;
-import de.saschahlusiak.hrw.dienststatus.R.menu;
-import de.saschahlusiak.hrw.dienststatus.R.string;
-import de.saschahlusiak.hrw.dienststatus.about.AboutActivity;
 import de.saschahlusiak.hrw.dienststatus.dienstdetails.DetailFragment;
 import de.saschahlusiak.hrw.dienststatus.dienste.DienststatusFragment;
 import de.saschahlusiak.hrw.dienststatus.dienste.DienststatusFragment.OnNodeClicked;
@@ -30,7 +25,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.Window;
 
 public class MainActivity extends Activity implements OnNodeClicked, OnStatisticClicked, OnNewsClicked {
 	static final String tag = MainActivity.class.getSimpleName();
