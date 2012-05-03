@@ -169,7 +169,7 @@ public class StatisticsFragment extends ListFragment implements OnItemClickListe
 		if (task == null)
 			refresh(false);
 
-		{
+		if (optionsMenu != null) {
 			ShareActionProvider share = (ShareActionProvider) optionsMenu.findItem(R.id.menu_item_share).getActionProvider();
 
 			Statistic s = (Statistic) adapter.getItem(0);
