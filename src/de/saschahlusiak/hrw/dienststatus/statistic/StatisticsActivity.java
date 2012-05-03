@@ -14,7 +14,6 @@ import android.widget.Toast;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 import de.saschahlusiak.hrw.dienststatus.R;
-import de.saschahlusiak.hrw.dienststatus.about.AboutActivity;
 import de.saschahlusiak.hrw.dienststatus.model.Statistic;
 import de.saschahlusiak.hrw.dienststatus.preferences.DienststatusPreferencesActivity;
 
@@ -55,22 +54,35 @@ public class StatisticsActivity extends ListActivity implements OnItemClickListe
 		
 		@Override
 		protected String doInBackground(String... urls) {
-			publishProgress();
-		
+			for (int i=0; i < urls.length; i++) {
+				Statistic s = (Statistic)adapter.getItem(i);
+				try {
+					s.loadCachedBitmap(StatisticsActivity.this);
+					publishProgress(s);
+				} catch (Exception e) {
+					e.printStackTrace();
+					publishProgress(s);
+				}
+				if (isCancelled())
+					return null;
+			}
+
 			for (int i=0; i < urls.length; i++) {
 				Statistic s = (Statistic)adapter.getItem(i);
 				if (s.getValid())
 					continue;
 				try {
-					s.setBitmap(s.fetch(StatisticsActivity.this, force));
+					if (s.fetch(StatisticsActivity.this, force)) {
+						s.loadCachedBitmap(StatisticsActivity.this);
+					}
 					publishProgress(s);
-					if (isCancelled())
-						break;
 				} catch (Exception e) {
 					e.printStackTrace();
 					publishProgress(s);
 //					return getString(R.string.connection_error);
 				}
+				if (isCancelled())
+					return null;
 			}
 
 			return null;

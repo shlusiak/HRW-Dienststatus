@@ -35,7 +35,6 @@ public class StatisticsFragment extends ListFragment implements OnItemClickListe
 	
 	OnStatisticClicked mListener;
 
-	
 	private class RefreshTask extends AsyncTask<String, Statistic, String> {
 		boolean force;
 		
@@ -52,13 +51,28 @@ public class StatisticsFragment extends ListFragment implements OnItemClickListe
 		@Override
 		protected String doInBackground(String... urls) {
 			publishProgress();
+			
+			for (int i=0; i < urls.length; i++) {
+				Statistic s = (Statistic)adapter.getItem(i);
+				try {
+					s.loadCachedBitmap(getActivity());
+					publishProgress(s);
+					if (isCancelled())
+						break;
+				} catch (Exception e) {
+					e.printStackTrace();
+					publishProgress(s);
+				}
+			}			
 
 			for (int i=0; i < urls.length; i++) {
 				Statistic s = (Statistic)adapter.getItem(i);
 				if (s.getValid())
 					continue;
 				try {
-					s.setBitmap(s.fetch(getActivity(), force));
+					if (s.fetch(getActivity(), force)) {
+						s.loadCachedBitmap(getActivity());
+					}
 					publishProgress(s);
 					if (isCancelled())
 						break;

@@ -61,7 +61,15 @@ public class Statistic {
 		return new File(cache_dir, url + ".png");
 	}
 	
-	public BitmapDrawable fetch(Context context, boolean force) {
+	public boolean loadCachedBitmap(Context context) {
+		File file = getCacheFile(context);
+		BitmapDrawable b = (BitmapDrawable) BitmapDrawable.createFromPath(file.getPath());
+		if (b != null)
+			setBitmap(b);
+		return (b != null);
+	}
+	
+	public boolean fetch(Context context, boolean force) {
 		File file = getCacheFile(context);
 
 		/* use cached file if younger than TIMEOUT minutes */
@@ -80,22 +88,22 @@ public class Statistic {
 						file.delete();
 						Log.d(tag, "removed partly downloaded file "
 								+ file.getPath());
-						return null;
+						return false;
 					}
 				}
 				myOutput.flush();
 				myInput.close();
 				myOutput.close();
 				file.setReadable(true, false);
+				return true;
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		} else {
 			Log.d(tag, "using cached file " + file.getPath());
 		}
-				
-		BitmapDrawable b = (BitmapDrawable) BitmapDrawable.createFromPath(file.getPath());
-		return b;
+
+		return false;
 	}
 	
 }
