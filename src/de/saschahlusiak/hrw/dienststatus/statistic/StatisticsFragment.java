@@ -67,8 +67,6 @@ public class StatisticsFragment extends ListFragment implements OnItemClickListe
 
 			for (int i=0; i < urls.length; i++) {
 				Statistic s = (Statistic)adapter.getItem(i);
-				if (s.getValid())
-					continue;
 				try {
 					if (s.fetch(getActivity(), force)) {
 						s.loadCachedBitmap(getActivity());

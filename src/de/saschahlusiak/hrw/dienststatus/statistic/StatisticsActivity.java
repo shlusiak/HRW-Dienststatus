@@ -69,8 +69,6 @@ public class StatisticsActivity extends ListActivity implements OnItemClickListe
 
 			for (int i=0; i < urls.length; i++) {
 				Statistic s = (Statistic)adapter.getItem(i);
-				if (s.getValid())
-					continue;
 				try {
 					if (s.fetch(StatisticsActivity.this, force)) {
 						s.loadCachedBitmap(StatisticsActivity.this);
