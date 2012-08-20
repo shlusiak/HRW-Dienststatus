@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.AsyncTask.Status;
 import android.os.Bundle;
 import android.util.Log;
@@ -93,7 +94,9 @@ public class DienststatusFragment extends ListFragment implements OnItemClickLis
 		}
 		
 		getActivity().getActionBar().setDisplayHomeAsUpEnabled(node != null);
-		getActivity().getActionBar().setHomeButtonEnabled(node != null);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+			getActivity().getActionBar().setHomeButtonEnabled(node != null);
+		}
 	}
 	
 	public void refresh() {

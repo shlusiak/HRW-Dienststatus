@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.AsyncTask.Status;
 import android.util.Log;
@@ -119,7 +120,9 @@ public class NewsListFragment extends ListFragment implements OnItemClickListene
 		getActivity().getActionBar().setTitle(R.string.news);
 		getActivity().getActionBar().setSubtitle(null);
 		getActivity().getActionBar().setDisplayHomeAsUpEnabled(false);
-		getActivity().getActionBar().setHomeButtonEnabled(false);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+			getActivity().getActionBar().setHomeButtonEnabled(false);
+		}
 	}
 	
 	@Override

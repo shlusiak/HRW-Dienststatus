@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.AsyncTask.Status;
 import android.view.LayoutInflater;
@@ -170,7 +171,9 @@ public class StatisticsFragment extends ListFragment implements OnItemClickListe
 		}
 		
 		getActivity().getActionBar().setDisplayHomeAsUpEnabled(category > 0);
-		getActivity().getActionBar().setHomeButtonEnabled(category > 0);	
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+			getActivity().getActionBar().setHomeButtonEnabled(category > 0);
+		}
 	}
 	
 	@Override

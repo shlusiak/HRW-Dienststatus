@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.AsyncTask.Status;
 import android.view.LayoutInflater;
@@ -68,7 +69,9 @@ public class DetailFragment extends Fragment {
 		}
 		
 		getActivity().getActionBar().setDisplayHomeAsUpEnabled(true);
-		getActivity().getActionBar().setHomeButtonEnabled(true);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+			getActivity().getActionBar().setHomeButtonEnabled(true);
+		}
 		
 		super.onActivityCreated(savedInstanceState);
 	}
