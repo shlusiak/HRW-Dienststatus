@@ -15,6 +15,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.w3c.dom.Text;
+
 import android.content.Context;
 import android.util.Log;
 import de.saschahlusiak.hrw.dienststatus.R;
@@ -30,6 +32,11 @@ public class Dienststatus {
 	public static ArrayList<HRWNode> getAllNodes() {
 		return allnodes;
 	}
+	
+	static String getTextContent(Node property) {
+		Text text = (Text)property.getChildNodes().item(0);
+		return text.getData();
+	}
 
 	private static void parseService(HRWNode node, Node property) {
 		HRWService service = new HRWService(null, null, HRWNode.UNSET);
@@ -37,13 +44,13 @@ public class Dienststatus {
 			Node sub = property.getChildNodes().item(i);
 
 			if (sub.getNodeName().equals("name"))
-				service.name = sub.getTextContent();
+				service.name = getTextContent(sub);
 			if (sub.getNodeName().equals("output"))
-				service.output = sub.getTextContent();
+				service.output = getTextContent(sub);
 			if (sub.getNodeName().equals("status"))
-				service.status = Integer.valueOf(sub.getTextContent());
+				service.status = Integer.valueOf(getTextContent(sub));
 			if (sub.getNodeName().equals("acknowledged"))
-				service.acknowledged = Integer.valueOf(sub.getTextContent()) == 1;
+				service.acknowledged = Integer.valueOf(getTextContent(sub)) == 1;
 		}
 		if (service.output != null)
 			node.output.add(service);
@@ -66,21 +73,21 @@ public class Dienststatus {
 			String name = property.getNodeName();
 
 			if (name.equals("name"))
-				node.name = property.getTextContent();
+				node.name = getTextContent(property);
 			if (name.equals("title"))
-				node.title = property.getTextContent();
+				node.title = getTextContent(property);
 			if (name.equals("url"))
-				node.url = property.getTextContent();
+				node.url = getTextContent(property);
 			if (name.equals("duration"))
-				node.duration = property.getTextContent();
+				node.duration = getTextContent(property);
 			if (name.equals("acknowledged"))
-				node.acknowledged = Integer.valueOf(property.getTextContent()) == 1;
+				node.acknowledged = Integer.valueOf(getTextContent(property)) == 1;
 			if (name.equals("status"))
-				node.status = Integer.valueOf(property.getTextContent());
+				node.status = Integer.valueOf(getTextContent(property));
 			if (name.equals("menuindex"))
-				node.id = property.getTextContent();
+				node.id = getTextContent(property);
 			if (name.equals("output"))
-				node.output.add(new HRWService(null, property.getTextContent(), HRWNode.UNSET));
+				node.output.add(new HRWService(null, getTextContent(property), HRWNode.UNSET));
 			if (name.equals("service"))
 				parseService(node, property);
 			if (name.equals("group")) {
