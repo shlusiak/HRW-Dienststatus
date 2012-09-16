@@ -10,6 +10,8 @@
         android:targetSdkVersion="16" />
     
     <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-feature android:name="android.hardware.faketouch" android:required="true" />
+  	<uses-feature android:name="android.hardware.touchscreen" android:required="false" />
 
     <application
         android:icon="@drawable/hrw_logo"
