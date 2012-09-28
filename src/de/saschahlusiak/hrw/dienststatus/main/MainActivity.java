@@ -14,61 +14,66 @@ import de.saschahlusiak.hrw.dienststatus.statistic.StatisticsFragment;
 import de.saschahlusiak.hrw.dienststatus.statistic.StatisticsFragment.OnStatisticClicked;
 import android.app.ActionBar;
 import android.app.ActionBar.TabListener;
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.app.ActionBar.Tab;
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.ViewPager;
+import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
-public class MainActivity extends Activity implements OnNodeClicked, OnStatisticClicked, OnNewsClicked {
+public class MainActivity extends FragmentActivity implements OnNodeClicked, OnStatisticClicked, OnNewsClicked, OnPageChangeListener {
 	static final String tag = MainActivity.class.getSimpleName();
 	boolean isCreated = false;
 	
+	ViewPager pager;
+	
 	abstract class MyTabListener implements TabListener {
-		Fragment f;
+//		Fragment f;
 		String tag;
 
 		MyTabListener(String tag) {
 			this.tag = tag;
-
-			f = getFragmentManager().findFragmentById(android.R.id.content);
+/*
+			f = getSupportFragmentManager().findFragmentById(android.R.id.content);
             if (f != null && !f.isDetached() && f.getTag().equals(tag)) {
-                FragmentTransaction ft = getFragmentManager().beginTransaction();
+                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
                 ft.detach(f);
                 ft.commit();
             } else
-            	f = null;
+            	f = null; */
 		}
 
-		@Override
-		public void onTabReselected(Tab tab, FragmentTransaction ft) {
+		public void onTabReselected(Tab tab, android.app.FragmentTransaction ft) {
 		}
 
-		@Override
-		public void onTabSelected(Tab tab, FragmentTransaction ft) {
-			if (!isCreated && f == null)
-					return;
+		public void onTabSelected(Tab tab, android.app.FragmentTransaction ft) {
+	/*		if (!isCreated && f == null)
+				return;
 			
 			if (f == null) {
 				f = createFragment();
-				ft.replace(android.R.id.content, f, tag);
+	//			ft.replace(R.id.viewPager, f, tag);
 			} else {
-				ft.attach(f);
-			}
+	//			ft.attach(f);
+			} */
+
+			
+			pager.setCurrentItem(tab.getPosition(), true);
 		}
 
-		@Override
-		public void onTabUnselected(Tab tab, FragmentTransaction ft) {
-			if (f == null)
+		public void onTabUnselected(Tab tab, android.app.FragmentTransaction ft) {
+/*			if (f == null)
 				return;
-			FragmentManager fm = getFragmentManager();
+			FragmentManager fm = getSupportFragmentManager();
 			if (fm.getBackStackEntryCount() > 0)
 				fm.popBackStack(fm.getBackStackEntryAt(0).getName(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
 			getActionBar().setDisplayHomeAsUpEnabled(false);
@@ -76,10 +81,8 @@ public class MainActivity extends Activity implements OnNodeClicked, OnStatistic
 				getActionBar().setHomeButtonEnabled(false);
 			}
 			
-			f = null;
+			f = null; */
 		}
-		
-		abstract Fragment createFragment();
 	}
 	
 	class DienststatusTabListener extends MyTabListener {
@@ -88,11 +91,6 @@ public class MainActivity extends Activity implements OnNodeClicked, OnStatistic
 			super(flat ? "warning" : "all");
 			this.flat = flat;
 		}
-		
-		@Override
-		Fragment createFragment() {
-			return new DienststatusFragment(flat ? null : "all");
-		}
 	}
 	
 	class StatisticsTabListener extends MyTabListener {
@@ -100,33 +98,60 @@ public class MainActivity extends Activity implements OnNodeClicked, OnStatistic
 			super("statistics");
 		}
 
-		@Override
-		Fragment createFragment() {
-			return new StatisticsFragment();
-		}
 	}
 
 	class NewsTabListener extends MyTabListener {
 		public NewsTabListener() {
 			super("news");
 		}
-
-		@Override
-		Fragment createFragment() {
-			return new NewsListFragment();
-		}
-		
 	}	
 	
+	class FragmentAdapter extends FragmentPagerAdapter {
+
+		public FragmentAdapter(android.support.v4.app.FragmentManager fm) {
+			super(fm);
+		}
+
+		@Override
+		public android.support.v4.app.Fragment getItem(int position) {
+			switch (position) {
+			case 0:
+				return new DienststatusFragment("all");
+			case 1:
+				return new DienststatusFragment((String)null);
+			case 2:
+				return new StatisticsFragment();
+			case 3:
+				return new NewsListFragment();
+
+			default:
+				return null;
+			}
+		}
+
+		@Override
+		public int getCount() {
+			return 4;
+		}
+	}
+	
+	FragmentAdapter adapter;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
+		setContentView(R.layout.main_fragment_activity);
+		
+		pager = (ViewPager) findViewById(R.id.viewPager);
+		adapter = new FragmentAdapter(getSupportFragmentManager());
+		pager.setOnPageChangeListener(this);
+		pager.setAdapter(adapter);
+		
 		getActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 		getActionBar().setDisplayShowTitleEnabled(true);
 //		getActionBar().setSubtitle("huhu");
-		
+
 		if (savedInstanceState == null)
 			isCreated = true;
 		
@@ -177,7 +202,7 @@ public class MainActivity extends Activity implements OnNodeClicked, OnStatistic
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case android.R.id.home:
-			FragmentManager fragmentManager = getFragmentManager();			
+			FragmentManager fragmentManager = getSupportFragmentManager();			
 			fragmentManager.popBackStack();
 			break;
 		case R.id.preferences:
@@ -190,30 +215,41 @@ public class MainActivity extends Activity implements OnNodeClicked, OnStatistic
 		return true;
 	}
 
+	
+	/* FIXME:
+	 * The ViewPager caches the Fragments based on the position and won't recreate
+	 * the views simply on a fragment replacement.
+	 * 
+	 * TODO:
+	 * Try to implement the sh** in:
+	 * http://stackoverflow.com/questions/7723964/replace-fragment-inside-a-viewpager
+	 */
 	@Override
 	public void onNodeDetails(DienststatusFragment fragment, HRWNode node) {
-		FragmentManager fragmentManager = getFragmentManager();
+		FragmentManager fragmentManager = getSupportFragmentManager();
 		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-		fragmentTransaction.setCustomAnimations(
-				R.animator.fragment_slide_left_enter,
-                R.animator.fragment_slide_left_exit /*,
-                R.animator.fragment_slide_right_enter,
-                R.animator.fragment_slide_right_exit */);
-		fragmentTransaction.replace(android.R.id.content, new DetailFragment(node.id), fragment.getTag());
+//		fragmentTransaction.setCustomAnimations(
+//				R.animator.fragment_slide_left_enter,
+//                R.animator.fragment_slide_left_exit /*,
+//                R.animator.fragment_slide_right_enter,
+//                R.animator.fragment_slide_right_exit */);
+		fragmentTransaction.replace(R.id.viewPager, new DetailFragment(node.id), fragment.getTag());
 		fragmentTransaction.addToBackStack(node.getParentId());
 		fragmentTransaction.commit();		
 	}
 
 	@Override
 	public void onNodeClicked(DienststatusFragment fragment, HRWNode node) {
-		FragmentManager fragmentManager = getFragmentManager();
+		FragmentManager fragmentManager = getSupportFragmentManager();
 		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-		fragmentTransaction.setCustomAnimations(
-				R.animator.fragment_slide_left_enter,
-                R.animator.fragment_slide_left_exit /*,
-                R.animator.fragment_slide_right_enter,
-                R.animator.fragment_slide_right_exit */);
-		fragmentTransaction.replace(android.R.id.content, new DienststatusFragment(node), fragment.getTag());
+//		fragmentTransaction.setCustomAnimations(
+//				R.animator.fragment_slide_left_enter,
+//                R.animator.fragment_slide_left_exit /*,
+//                R.animator.fragment_slide_right_enter,
+//                R.animator.fragment_slide_right_exit */);
+		Fragment f = new DienststatusFragment(node);
+		fragmentTransaction.replace(R.id.viewPager, f, fragment.getTag());
+
 		Log.v(tag, "pushing new " + node.getParentId());
 		fragmentTransaction.addToBackStack(node.getParentId());
 		fragmentTransaction.commit();
@@ -221,14 +257,14 @@ public class MainActivity extends Activity implements OnNodeClicked, OnStatistic
 
 	@Override
 	public void onStatisticClicked(StatisticsFragment fragment, int category) {
-		FragmentManager fragmentManager = getFragmentManager();
+		FragmentManager fragmentManager = getSupportFragmentManager();
 		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-		fragmentTransaction.setCustomAnimations(
-				R.animator.fragment_slide_left_enter,
-                R.animator.fragment_slide_left_exit /*,
-                R.animator.fragment_slide_right_enter,
-                R.animator.fragment_slide_right_exit */);
-		fragmentTransaction.replace(android.R.id.content, new StatisticsFragment(category), fragment.getTag());
+//		fragmentTransaction.setCustomAnimations(
+//				R.animator.fragment_slide_left_enter,
+//                R.animator.fragment_slide_left_exit /*,
+//                R.animator.fragment_slide_right_enter,
+//                R.animator.fragment_slide_right_exit */);
+		fragmentTransaction.replace(R.id.viewPager, new StatisticsFragment(category), fragment.getTag());
 //		Log.v(tag, "pushing new " + node.getParentId());
 		fragmentTransaction.addToBackStack(null);
 		fragmentTransaction.commit();
@@ -236,16 +272,33 @@ public class MainActivity extends Activity implements OnNodeClicked, OnStatistic
 
 	@Override
 	public void onNewsDetails(NewsListFragment fragment, NewsItem item) {
-		FragmentManager fragmentManager = getFragmentManager();
+		FragmentManager fragmentManager = getSupportFragmentManager();
 		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-		fragmentTransaction.setCustomAnimations(
-				R.animator.fragment_slide_left_enter,
-                R.animator.fragment_slide_left_exit /*,
-                R.animator.fragment_slide_right_enter,
-                R.animator.fragment_slide_right_exit */);
-		fragmentTransaction.replace(android.R.id.content, new NewsItemFragment(item), fragment.getTag());
+//		fragmentTransaction.setCustomAnimations(
+//				R.animator.fragment_slide_left_enter,
+//                R.animator.fragment_slide_left_exit /*,
+//                R.animator.fragment_slide_right_enter,
+//                R.animator.fragment_slide_right_exit */);
+		fragmentTransaction.replace(R.id.viewPager, new NewsItemFragment(item), fragment.getTag());
 //		Log.v(tag, "pushing new " + node.getParentId());
 		fragmentTransaction.addToBackStack(null);
 		fragmentTransaction.commit();
+	}
+
+	@Override
+	public void onPageScrollStateChanged(int position) {
+		
+	}
+
+	@Override
+	public void onPageScrolled(int arg0, float arg1, int arg2) {
+		
+	}
+
+	@Override
+	public void onPageSelected(int position) {
+		getActionBar().selectTab(getActionBar().getTabAt(position));
+		ActivityFragmentInterface f = (ActivityFragmentInterface)adapter.getItem(position);
+		f.updateActionBar(getActionBar());
 	}
 }

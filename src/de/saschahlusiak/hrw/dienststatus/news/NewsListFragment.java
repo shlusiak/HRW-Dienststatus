@@ -3,9 +3,11 @@ package de.saschahlusiak.hrw.dienststatus.news;
 
 import java.util.ArrayList;
 import de.saschahlusiak.hrw.dienststatus.R;
+import de.saschahlusiak.hrw.dienststatus.main.ActivityFragmentInterface;
 import de.saschahlusiak.hrw.dienststatus.model.NewsItem;
 import de.saschahlusiak.hrw.dienststatus.model.NewsProvider;
-import android.app.ListFragment;
+import android.app.ActionBar;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -13,6 +15,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.AsyncTask.Status;
+import android.support.v4.app.ListFragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -25,7 +28,7 @@ import android.widget.ShareActionProvider;
 import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 
-public class NewsListFragment extends ListFragment implements OnItemClickListener {
+public class NewsListFragment extends ListFragment implements OnItemClickListener, ActivityFragmentInterface {
 	NewsAdapter adapter;
 	ListView list;
 	
@@ -106,6 +109,7 @@ public class NewsListFragment extends ListFragment implements OnItemClickListene
 	public void onStart() {
 		task = new RefreshTask();
 		task.execute();
+		
 		super.onStart();
 	}
 	
@@ -116,13 +120,6 @@ public class NewsListFragment extends ListFragment implements OnItemClickListene
 
 		getListView().setOnItemClickListener(this);
 	//	registerForContextMenu(getListView());
-		
-		getActivity().getActionBar().setTitle(R.string.news);
-		getActivity().getActionBar().setSubtitle(null);
-		getActivity().getActionBar().setDisplayHomeAsUpEnabled(false);
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-			getActivity().getActionBar().setHomeButtonEnabled(false);
-		}
 	}
 	
 	@Override
@@ -206,5 +203,15 @@ public class NewsListFragment extends ListFragment implements OnItemClickListene
                 refreshItem.setActionView(null);
             }
         }
+	}
+
+	@Override
+	public void updateActionBar(ActionBar actionBar) {
+		actionBar.setTitle(R.string.news);
+		actionBar.setSubtitle(null);
+		actionBar.setDisplayHomeAsUpEnabled(false);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+			actionBar.setHomeButtonEnabled(false);
+		}
 	}	
 }

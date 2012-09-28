@@ -1,9 +1,10 @@
 package de.saschahlusiak.hrw.dienststatus.dienste;
 
 import de.saschahlusiak.hrw.dienststatus.R;
+import de.saschahlusiak.hrw.dienststatus.main.ActivityFragmentInterface;
 import de.saschahlusiak.hrw.dienststatus.model.Dienststatus;
 import de.saschahlusiak.hrw.dienststatus.model.HRWNode;
-import android.app.ListFragment;
+import android.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -11,6 +12,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.AsyncTask.Status;
 import android.os.Bundle;
+import android.support.v4.app.ListFragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -22,7 +24,7 @@ import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Toast;
 
-public class DienststatusFragment extends ListFragment implements OnItemClickListener {
+public class DienststatusFragment extends ListFragment implements OnItemClickListener, ActivityFragmentInterface {
 	static final String tag = DienststatusFragment.class.getSimpleName();
 	DienststatusAdapter adapter;
 	static RefreshTask refreshTask;
@@ -79,24 +81,6 @@ public class DienststatusFragment extends ListFragment implements OnItemClickLis
 
 		getListView().setOnItemClickListener(this);
 		registerForContextMenu(getListView());
-		
-		if (node != null) {
-			if (node.getParent() == null) {
-				getActivity().getActionBar().setTitle(node.name);
-				getActivity().getActionBar().setSubtitle(null);
-			} else {
-				getActivity().getActionBar().setTitle(node.getParent().name);
-				getActivity().getActionBar().setSubtitle(node.name);
-			}
-		} else {
-			getActivity().getActionBar().setTitle(level == null ? R.string.tab_warnings : R.string.main_name);
-			getActivity().getActionBar().setSubtitle(null);
-		}
-		
-		getActivity().getActionBar().setDisplayHomeAsUpEnabled(node != null);
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-			getActivity().getActionBar().setHomeButtonEnabled(node != null);
-		}
 	}
 	
 	public void refresh() {
@@ -115,16 +99,12 @@ public class DienststatusFragment extends ListFragment implements OnItemClickLis
 	@Override
 	public void onStart() {
 		super.onStart();
+		
 		adapter.fillLevel(level);
 		if (refreshTask != null || Dienststatus.needsFetch())
 			refresh();
 	}
-	
-	@Override
-	public void onStop() {
-		super.onStop();
-	}
-	
+		
 	@Override
 	public void onCreateContextMenu(android.view.ContextMenu menu, View v,
 			android.view.ContextMenu.ContextMenuInfo menuInfo) {
@@ -309,5 +289,26 @@ public class DienststatusFragment extends ListFragment implements OnItemClickLis
 			}
 			super.onPostExecute(result);
 		}
+	}
+
+	@Override
+	public void updateActionBar(ActionBar actionBar) {
+		if (node != null) {
+			if (node.getParent() == null) {
+				actionBar.setTitle(node.name);
+				actionBar.setSubtitle(null);
+			} else {
+				actionBar.setTitle(node.getParent().name);
+				actionBar.setSubtitle(node.name);
+			}
+		} else {
+			actionBar.setTitle(level == null ? R.string.tab_warnings : R.string.main_name);
+			actionBar.setSubtitle(null);
+		}
+		
+		actionBar.setDisplayHomeAsUpEnabled(node != null);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+			actionBar.setHomeButtonEnabled(node != null);
+		}		
 	}	
 }

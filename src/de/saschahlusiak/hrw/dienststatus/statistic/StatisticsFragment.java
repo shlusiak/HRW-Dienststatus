@@ -1,6 +1,6 @@
 package de.saschahlusiak.hrw.dienststatus.statistic;
 
-import android.app.ListFragment;
+import android.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -8,6 +8,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.AsyncTask.Status;
+import android.support.v4.app.ListFragment;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -19,9 +20,10 @@ import android.widget.Toast;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 import de.saschahlusiak.hrw.dienststatus.R;
+import de.saschahlusiak.hrw.dienststatus.main.ActivityFragmentInterface;
 import de.saschahlusiak.hrw.dienststatus.model.Statistic;
 
-public class StatisticsFragment extends ListFragment implements OnItemClickListener {
+public class StatisticsFragment extends ListFragment implements OnItemClickListener, ActivityFragmentInterface {
 	private StatisticsAdapter adapter;
 	int category;
 	Menu optionsMenu;
@@ -161,19 +163,6 @@ public class StatisticsFragment extends ListFragment implements OnItemClickListe
 		this.mListener = (OnStatisticClicked) getActivity();
 		getListView().setOnItemClickListener(this);
 		registerForContextMenu(getListView());
-		
-		if (category != 0) {
-			getActivity().getActionBar().setTitle(R.string.tab_statistics);
-			getActivity().getActionBar().setSubtitle(StatisticsActivity.STATISTIC_TITLES[category]);
-		} else {
-			getActivity().getActionBar().setTitle(R.string.tab_statistics);
-			getActivity().getActionBar().setSubtitle(null);
-		}
-		
-		getActivity().getActionBar().setDisplayHomeAsUpEnabled(category > 0);
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-			getActivity().getActionBar().setHomeButtonEnabled(category > 0);
-		}
 	}
 	
 	@Override
@@ -184,7 +173,7 @@ public class StatisticsFragment extends ListFragment implements OnItemClickListe
 		if (task == null)
 			refresh(false);
 
-		if (optionsMenu != null) {
+/*		if (optionsMenu != null) {
 			ShareActionProvider share = (ShareActionProvider) optionsMenu.findItem(R.id.menu_item_share).getActionProvider();
 
 			Statistic s = (Statistic) adapter.getItem(0);
@@ -199,8 +188,7 @@ public class StatisticsFragment extends ListFragment implements OnItemClickListe
 				intent.putExtra(Intent.EXTRA_TEXT, WEBSITE);
 			}
 			share.setShareIntent(intent);
-		}
-		
+		} */
 	}
 
 	@Override
@@ -334,6 +322,22 @@ public class StatisticsFragment extends ListFragment implements OnItemClickListe
                 refreshItem.setActionView(null);
             }
         }
+	}
+
+	@Override
+	public void updateActionBar(ActionBar actionBar) {
+		if (category != 0) {
+			actionBar.setTitle(R.string.tab_statistics);
+			actionBar.setSubtitle(StatisticsActivity.STATISTIC_TITLES[category]);
+		} else {
+			actionBar.setTitle(R.string.tab_statistics);
+			actionBar.setSubtitle(null);
+		}
+		
+		actionBar.setDisplayHomeAsUpEnabled(category > 0);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+			actionBar.setHomeButtonEnabled(category > 0);
+		}
 	}	
 
 }
