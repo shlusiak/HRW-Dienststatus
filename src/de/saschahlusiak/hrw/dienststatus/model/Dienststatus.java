@@ -1,11 +1,14 @@
 package de.saschahlusiak.hrw.dienststatus.model;
 
+import java.io.InputStream;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.zip.GZIPInputStream;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
 import org.apache.http.client.methods.HttpGet;
@@ -23,8 +26,7 @@ import de.saschahlusiak.hrw.dienststatus.R;
 
 public class Dienststatus {
 	private static final String tag = Dienststatus.class.getSimpleName();
-	private static final HttpUriRequest uri = new HttpGet(
-			"http://nagvis-pub.hs-weingarten.de/cgi-bin/nagxml.pl?all");
+	private static final String uri = "http://nagvis-pub.hs-weingarten.de/cgi-bin/nagxml.pl?all";
 	
 	private static Document dom = null;
 	private static ArrayList<HRWNode> allnodes = new ArrayList<HRWNode>();
@@ -107,9 +109,12 @@ public class Dienststatus {
 	public synchronized static String fetch(Context context) {
 		try {
 			DefaultHttpClient client = new DefaultHttpClient();
-			final HttpResponse resp = client.execute(uri);
+			HttpUriRequest req = new HttpGet(uri);
+			req.addHeader("Accept-Encoding", "gzip");
 
-			final StatusLine status = resp.getStatusLine();
+			HttpResponse resp = client.execute(req);
+
+			StatusLine status = resp.getStatusLine();
 			if (status.getStatusCode() != 200) {
 				Log.d(tag,
 						"HTTP error, invalid server status code: "
@@ -122,7 +127,13 @@ public class Dienststatus {
 			DocumentBuilderFactory factory = DocumentBuilderFactory
 					.newInstance();
 			DocumentBuilder builder = factory.newDocumentBuilder();
-			dom = builder.parse(resp.getEntity().getContent());
+
+			InputStream is = resp.getEntity().getContent();
+			Header contentEncoding = resp.getFirstHeader("Content-Encoding");
+			if (contentEncoding != null && contentEncoding.getValue().equalsIgnoreCase("gzip")) {
+			    is = new GZIPInputStream(is);
+			}
+			dom = builder.parse(is);
 		} catch (UnknownHostException e) {
 			Log.e(tag, e.getMessage());
 			return "Unknown host: " + e.getMessage();
