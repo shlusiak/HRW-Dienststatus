@@ -2,6 +2,18 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     android:key="first_preferencescreen" >
 
+    <PreferenceCategory android:title="@string/main_name" >
+        <PreferenceScreen
+            android:title="@string/gotowebsite"
+            android:summary="http://www.hs-weingarten.de/web/rechenzentrum" >
+
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="http://www.hs-weingarten.de/web/rechenzentrum" />
+        </PreferenceScreen>
+    </PreferenceCategory>
+    
+    
     <PreferenceCategory android:title="@string/about" >
 
         <PreferenceScreen
