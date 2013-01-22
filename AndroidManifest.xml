@@ -63,7 +63,8 @@
         <activity
             android:label="@string/about_app_name"
             android:theme="@style/Theme.HRW.Dialog"
-            android:name=".about.AboutActivity" >
+            android:name=".about.AboutActivity"
+            android:exported="false" >
             <intent-filter>
                 <action android:name="de.saschahlusiak.hrw.dienststatus.SHOW_ABOUT" />
                 <category android:name="android.intent.category.DEFAULT" />
