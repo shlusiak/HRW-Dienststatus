@@ -201,7 +201,8 @@ public class DienststatusFragment extends ListFragment implements OnItemClickLis
 				intent.setType("text/plain");
 				intent.putExtra(Intent.EXTRA_EMAIL, new String[] { getString(R.string.rz_service_email) });
 				intent.putExtra(Intent.EXTRA_SUBJECT, "Frage an das Rechenzentrum");
-				intent.putExtra(Intent.EXTRA_TEXT, "Frage bezüglich: " + node.getFullPath() + "<br><br>");
+				if (node != null)
+					intent.putExtra(Intent.EXTRA_TEXT, "Frage bezüglich: " + node.getFullPath() + "<br><br>");
 				startActivity(intent);
 			} catch (Exception e) {
 				e.printStackTrace();
