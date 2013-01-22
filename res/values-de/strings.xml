@@ -15,7 +15,7 @@
     <string name="gotowebsite">Website öffnen</string>
     <string name="about">Über...</string>
     <string name="about_app_name">HRW Dienststatus App</string>
-    <string name="about_app_long">Zeigt den Dienststatus der Hochschule Ravensburg-Weingarten an.\n\nDie Information ist auch über Web abrufbar:\nhttp://www.hs-weingarten.de/web/rechenzentrum/dienststatus</string>
+    <string name="about_app_long">Zeigt den Dienststatus der Hochschule Ravensburg-Weingarten an.\n\nDiese Informationen waren früher auch über das Web abrufbar, wurden aber inzwischen von dort entfernt.\nhttp://www.hs-weingarten.de/web/rechenzentrum</string>
    	<string name="cause_i_can">Weil ich\'s kann...</string>     
     <string name="invalid_http_status">Ungültiger Statuscode: $1%d</string>     
     <string name="connection_error">Verbindungsfehler</string>

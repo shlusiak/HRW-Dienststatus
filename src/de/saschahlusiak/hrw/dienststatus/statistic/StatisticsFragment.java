@@ -28,8 +28,6 @@ public class StatisticsFragment extends ListFragment implements OnItemClickListe
 	View mRefreshIndeterminateProgressView;
 
 	
-	static final String WEBSITE = "http://www.hs-weingarten.de/web/rechenzentrum/zahlen-und-fakten";
-	
 	public interface OnStatisticClicked {
 		public void onStatisticClicked(StatisticsFragment fragment, int category);
 	}
@@ -194,11 +192,12 @@ public class StatisticsFragment extends ListFragment implements OnItemClickListe
 				Uri uri = Uri.fromFile(s.getCacheFile(getActivity()));
 				intent.setType("image/png");
 				intent.putExtra(Intent.EXTRA_STREAM, uri);
+				share.setShareIntent(intent);
 			} else {
-				intent.setType("text/plain");
-				intent.putExtra(Intent.EXTRA_TEXT, WEBSITE);
+//				intent.setType("text/plain");
+//				intent.putExtra(Intent.EXTRA_STREAM, WEBSITE);
+				share.setShareIntent(null);
 			}
-			share.setShareIntent(intent);
 		}
 		
 	}
@@ -283,20 +282,12 @@ public class StatisticsFragment extends ListFragment implements OnItemClickListe
 			refresh(true);
 			return true;
 		}
-		if (item.getItemId() == R.id.gotowebsite) {
-			Intent intent = new Intent(
-					"android.intent.action.VIEW",
-					Uri.parse(WEBSITE));
-			startActivity(intent);
-			return true;
-		}
 		if (item.getItemId() == R.id.sendemail) {
 			try {
 				Intent intent = new Intent(Intent.ACTION_SEND);
 				intent.setType("plain/text");
 				intent.putExtra(Intent.EXTRA_EMAIL, new String[] { getString(R.string.rz_service_email) });
 				intent.putExtra(Intent.EXTRA_SUBJECT, "Frage an das Rechenzentrum");
-				intent.putExtra(Intent.EXTRA_TEXT, "Siehe: " + WEBSITE);
 				startActivity(intent);
 			} catch (Exception e) {
 				e.printStackTrace();

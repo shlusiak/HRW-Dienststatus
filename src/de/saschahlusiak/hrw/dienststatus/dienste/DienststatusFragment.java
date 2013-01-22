@@ -27,7 +27,6 @@ public class DienststatusFragment extends ListFragment implements OnItemClickLis
 	DienststatusAdapter adapter;
 	static RefreshTask refreshTask;
 	String level;
-	public static final String WEBSITE = "http://www.hs-weingarten.de/web/rechenzentrum/dienststatus";
 	OnNodeClicked mListener;
 	HRWNode node = null;
 	Menu optionsMenu;
@@ -168,7 +167,7 @@ public class DienststatusFragment extends ListFragment implements OnItemClickLis
 				intent.setType("plain/text");
 				intent.putExtra(Intent.EXTRA_EMAIL, new String[] { getString(R.string.rz_service_email) });
 				intent.putExtra(Intent.EXTRA_SUBJECT, "Frage an das Rechenzentrum");
-				intent.putExtra(Intent.EXTRA_TEXT, "Siehe: <br>" + WEBSITE + " ,<br>" + node.getFullPath() + "<br><br>");
+				intent.putExtra(Intent.EXTRA_TEXT, "Frage bezüglich: " + node.getFullPath() + "<br><br>");
 				startActivity(intent);
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -196,19 +195,13 @@ public class DienststatusFragment extends ListFragment implements OnItemClickLis
 		case R.id.refresh:
 			refresh();
 			break;
-		case R.id.gotowebsite:
-			intent = new Intent(
-					"android.intent.action.VIEW",
-					Uri.parse(WEBSITE));
-			startActivity(intent);
-			break;
 		case R.id.sendemail:
 			try {
 				intent = new Intent(Intent.ACTION_SEND);
 				intent.setType("text/plain");
 				intent.putExtra(Intent.EXTRA_EMAIL, new String[] { getString(R.string.rz_service_email) });
 				intent.putExtra(Intent.EXTRA_SUBJECT, "Frage an das Rechenzentrum");
-				intent.putExtra(Intent.EXTRA_TEXT, "Siehe: <br>" + WEBSITE + " ,<br>" + node.getFullPath() + "<br><br>");
+				intent.putExtra(Intent.EXTRA_TEXT, "Frage bezüglich: " + node.getFullPath() + "<br><br>");
 				startActivity(intent);
 			} catch (Exception e) {
 				e.printStackTrace();

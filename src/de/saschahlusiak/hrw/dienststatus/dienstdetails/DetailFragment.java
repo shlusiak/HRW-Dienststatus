@@ -122,19 +122,13 @@ public class DetailFragment extends Fragment {
 		case R.id.refresh:
 			refresh();
 			break;
-		case R.id.gotowebsite:
-			intent = new Intent(
-					"android.intent.action.VIEW",
-					Uri.parse(DienststatusFragment.WEBSITE));
-			startActivity(intent);
-			break;
 		case R.id.sendemail:
 			try {
 				intent = new Intent(Intent.ACTION_SEND);
 				intent.setType("plain/text");
 				intent.putExtra(Intent.EXTRA_EMAIL, new String[] { getString(R.string.rz_service_email) });
 				intent.putExtra(Intent.EXTRA_SUBJECT, "Frage an das Rechenzentrum");
-				intent.putExtra(Intent.EXTRA_TEXT, "Siehe: <br>" + DienststatusFragment.WEBSITE + " ,<br>" + node.getFullPath() + "<br><br>");
+				intent.putExtra(Intent.EXTRA_TEXT, "Frage bezüglich: " + node.getFullPath() + "<br><br>");
 				startActivity(intent);
 			} catch (Exception e) {
 				e.printStackTrace();

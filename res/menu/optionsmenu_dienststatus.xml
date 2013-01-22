@@ -4,9 +4,6 @@
 	    android:showAsAction="ifRoom"
 		android:icon="@android:drawable/ic_popup_sync" />
 
-	<item android:id="@+id/gotowebsite" android:title="@string/gotowebsite"
-		android:icon="@android:drawable/ic_menu_set_as" />
-
 	<item android:id="@+id/sendemail" android:title="@string/send_email"
 		android:icon="@android:drawable/ic_menu_report_image" />
 </menu>

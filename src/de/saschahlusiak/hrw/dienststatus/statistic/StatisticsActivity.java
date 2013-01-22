@@ -21,8 +21,6 @@ public class StatisticsActivity extends ListActivity implements OnItemClickListe
 	private StatisticsAdapter adapter;
 	int category;
 	
-	static final String WEBSITE = "http://www.hs-weingarten.de/web/rechenzentrum/zahlen-und-fakten";
-
 	public static final String STATISTIC_TITLES[] = {
 			null, "Internet", "IPv6", "E-Mail", "Wireless-LAN", "LSF", "Moodle", "VPN", "Monitoring",
 			};
@@ -220,20 +218,12 @@ public class StatisticsActivity extends ListActivity implements OnItemClickListe
 			Intent intent = new Intent(this, DienststatusPreferencesActivity.class);
 			startActivity(intent);
 		}
-		if (item.getItemId() == R.id.gotowebsite) {
-			Intent intent = new Intent(
-					"android.intent.action.VIEW",
-					Uri.parse(WEBSITE));
-			startActivity(intent);
-			return true;
-		}
 		if (item.getItemId() == R.id.sendemail) {
 			try {
 				Intent intent = new Intent(Intent.ACTION_SEND);
 				intent.setType("text/plain");
 				intent.putExtra(Intent.EXTRA_EMAIL, new String[] { getString(R.string.rz_service_email) });
 				intent.putExtra(Intent.EXTRA_SUBJECT, "Frage an das Rechenzentrum");
-				intent.putExtra(Intent.EXTRA_TEXT, "Siehe: " + WEBSITE);
 				startActivity(Intent.createChooser(intent, getString(R.string.send_email)));
 			} catch (Exception e) {
 				e.printStackTrace();

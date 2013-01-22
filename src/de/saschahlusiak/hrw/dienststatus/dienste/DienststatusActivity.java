@@ -31,7 +31,6 @@ public class DienststatusActivity extends Activity implements
 	
 	private final String tag = DienststatusActivity.class.getSimpleName();
 	private String level = "all";
-	private static final String WEBSITE = "http://www.hs-weingarten.de/web/rechenzentrum/dienststatus";
 
 	private class RefreshTask extends AsyncTask<Void, Integer, String> {
 		@Override
@@ -200,7 +199,7 @@ public class DienststatusActivity extends Activity implements
 				intent.setType("plain/text");
 				intent.putExtra(Intent.EXTRA_EMAIL, new String[] { getString(R.string.rz_service_email) });
 				intent.putExtra(Intent.EXTRA_SUBJECT, "Frage an das Rechenzentrum");
-				intent.putExtra(Intent.EXTRA_TEXT, "Siehe: <br>" + WEBSITE + " ,<br>" + node.getFullPath() + "<br><br>");
+				intent.putExtra(Intent.EXTRA_TEXT, "Frage bezüglich: " + node.getFullPath() + "<br><br>");
 				startActivity(intent);
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -245,20 +244,12 @@ public class DienststatusActivity extends Activity implements
 			Intent intent = new Intent(this, DienststatusPreferencesActivity.class);
 			startActivity(intent);
 		}
-		if (item.getItemId() == R.id.gotowebsite) {
-			Intent intent = new Intent(
-					"android.intent.action.VIEW",
-					Uri.parse(WEBSITE));
-			startActivity(intent);
-			return true;
-		}
 		if (item.getItemId() == R.id.sendemail) {
 			try {
 				Intent intent = new Intent(Intent.ACTION_SEND);
 				intent.setType("text/plain");
 				intent.putExtra(Intent.EXTRA_EMAIL, new String[] { getString(R.string.rz_service_email) });
 				intent.putExtra(Intent.EXTRA_SUBJECT, "Frage an das Rechenzentrum");
-				intent.putExtra(Intent.EXTRA_TEXT, "Siehe: " + WEBSITE);
 				startActivity(intent);
 			} catch (Exception e) {
 				e.printStackTrace();

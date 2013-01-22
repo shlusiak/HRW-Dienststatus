@@ -15,7 +15,7 @@
     <string name="gotowebsite">Open Website</string>
     <string name="about">About...</string>
     <string name="about_app_name">HRW IT-Status App</string>
-    <string name="about_app_long">Android App to visualize IT-Status information for the University of Weingarten.\n\nThe information is publically available at:\nhttp://www.hs-weingarten.de/web/rechenzentrum/dienststatus</string>
+    <string name="about_app_long">Android App to visualize current IT-Status information for the University of Weingarten.\n\nThe information was also publically available on the web, but has been removed.\nhttp://www.hs-weingarten.de/web/rechenzentrum</string>
    	<string name="cause_i_can">Because I can...</string>     
     <string name="invalid_http_status">Invalid HTTP status code: $1%d</string>     
     <string name="connection_error">Connection error</string>
