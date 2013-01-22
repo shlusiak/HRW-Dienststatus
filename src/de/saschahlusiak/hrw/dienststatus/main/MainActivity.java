@@ -1,6 +1,7 @@
 package de.saschahlusiak.hrw.dienststatus.main;
 
 import de.saschahlusiak.hrw.dienststatus.R;
+import de.saschahlusiak.hrw.dienststatus.about.AboutActivity;
 import de.saschahlusiak.hrw.dienststatus.dienstdetails.DetailFragment;
 import de.saschahlusiak.hrw.dienststatus.dienste.DienststatusFragment;
 import de.saschahlusiak.hrw.dienststatus.dienste.DienststatusFragment.OnNodeClicked;
@@ -182,6 +183,10 @@ public class MainActivity extends Activity implements OnNodeClicked, OnStatistic
 			break;
 		case R.id.preferences:
 			Intent intent = new Intent(this, DienststatusPreferencesActivity.class);
+			startActivity(intent);
+			break;
+		case R.id.about:
+			intent = new Intent(this, AboutActivity.class);
 			startActivity(intent);
 			break;
 		
