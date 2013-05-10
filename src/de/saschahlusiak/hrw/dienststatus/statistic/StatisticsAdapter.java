@@ -60,12 +60,6 @@ public class StatisticsAdapter extends BaseAdapter {
 		
 		s.setBitmap(bitmap);
 		if (bitmap != null) {
-			/* width is 463px */
-			bitmap.getBitmap().setDensity(128);
-			/* with 128dpi the image is 3.7" = 9,18cm */ 
-			/* rendering it at 256dpi, the image will be scaled up by 2 to match 9.18cm */ 
-			bitmap.setTargetDensity(256);
-			bitmap.setFilterBitmap(true);
 			s.setValid(true);
 		} else {
 			s.setValid(false);
@@ -104,7 +98,14 @@ public class StatisticsAdapter extends BaseAdapter {
 //		convertView.setMinimumHeight(500);
 		if (s.getBitmap() != null) {
 //			b.setTargetDensity(b.getBitmap().getDensity());
-			holder.image.setImageDrawable(s.getBitmap());
+			BitmapDrawable bitmap = s.getBitmap();
+			/* width is 463px */
+			bitmap.getBitmap().setDensity(128);
+			/* with 128dpi the image is 3.7" = 9,18cm */ 
+			/* rendering it at 256dpi, the image will be scaled up by 2 to match 9.18cm */ 
+			bitmap.setTargetDensity(256);
+			bitmap.setFilterBitmap(true);
+			holder.image.setImageDrawable(bitmap);
 //			holder.image.setMaxHeight(10000);
 //			holder.image.setMinimumWidth(500);
 //			holder.image.setMinimumHeight(0);
