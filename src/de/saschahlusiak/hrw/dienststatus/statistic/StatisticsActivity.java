@@ -26,8 +26,8 @@ public class StatisticsActivity extends ListActivity implements OnItemClickListe
 			};
 	public static final String STATISTICS[][] = { 
 			/* 0 */	{ "internet", "internet-ipv6", "email", "wlan-hrw", "lsf", "moodle-week", "vpn", "nagvis-day" },
-			/* 1 */ { "internet", "internet-month", "internet-year" },
-			/* 2 */ { "internet-ipv6", "internet-ipv6-month", "internet-ipv6-year", "internet-ipv6-percent", "internet-ipv6-percent-year" },
+			/* 1 */ { "internet", "internet-week", "internet-month", "internet-year" },
+			/* 2 */ { "internet-ipv6", "internet-ipv6-week", "internet-ipv6-month", "internet-ipv6-year", "internet-ipv6-percent", "internet-ipv6-percent-year" },
 			/* 3 */ { "email", "email-week", "email-month", "email-year" },
 			/* 4 */ { "wlan-hrw", "wlan-hrw-week", "wlan-hrw-month", "wlan-hrw-year", 
 					  "wlan-hswgt2", "wlan-hswgt2-week", "wlan-hswgt2-month", "wlan-hswgt2-year",
