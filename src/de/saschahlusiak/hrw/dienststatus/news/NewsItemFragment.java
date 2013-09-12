@@ -82,7 +82,7 @@ public class NewsItemFragment extends Fragment {
 				  "</body>" +
 				"</html>";
 		
-		web.loadData(content, "text/html", "UTF-8");
+		web.loadDataWithBaseURL(null, content, "text/html", "utf-8", null);
 		
 		if (news.title.length() <= 1) {
 			title.setText(news.header);
